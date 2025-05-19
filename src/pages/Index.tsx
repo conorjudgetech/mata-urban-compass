@@ -1,6 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { Languages, Utensils, Bus, Train } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { OnboardingModal } from '@/components/OnboardingModal';
