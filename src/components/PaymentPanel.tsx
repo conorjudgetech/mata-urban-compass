@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 
 interface PaymentOption {
@@ -34,28 +35,23 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
   onSuccess,
   destination,
 }) => {
-  const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<string>('student');
   const [selectedPayment, setSelectedPayment] = useState('mastercard');
   const [loading, setLoading] = useState(false);
+  const [useRewards, setUseRewards] = useState(false);
   
   const ticketOptions: PaymentOption[] = [
     {
-      id: 'single',
-      name: 'Single Ticket',
-      price: '€3.00',
+      id: 'adult',
+      name: 'Adult Ticket',
+      price: '€7.00',
       type: 'Standard',
-    },
-    {
-      id: 'day',
-      name: 'Day Pass',
-      price: '€8.50',
-      type: 'Unlimited 24h',
     },
     {
       id: 'student',
       name: 'Student Single',
-      price: '€1.50',
-      discount: '50% off',
+      price: '€5.00',
+      discount: '30% off',
       type: 'Student ID Required',
     },
   ];
@@ -72,8 +68,17 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
     setTimeout(() => {
       setLoading(false);
       onSuccess();
-      toast.success('Ticket purchased successfully!');
+      toast.success(`Ticket purchased successfully! ${useRewards ? 'Rewards applied. ' : ''}You earned 5 points!`);
     }, 1500);
+  };
+
+  // Calculate final price after rewards if applied
+  const getFinalPrice = () => {
+    const basePrice = selectedTicket === 'student' ? 5.00 : 7.00;
+    if (useRewards) {
+      return `€${(basePrice - 1).toFixed(2)}`;
+    }
+    return `€${basePrice.toFixed(2)}`;
   };
   
   return (
@@ -82,14 +87,14 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
         <DialogHeader>
           <DialogTitle>Purchase Transit Ticket</DialogTitle>
           <DialogDescription>
-            Select your ticket to {destination}
+            Bus to {destination} - Aircoach Express
           </DialogDescription>
         </DialogHeader>
         
         <div className="py-4">
           <div className="mb-4">
             <h4 className="text-sm font-medium mb-3">Ticket Options</h4>
-            <RadioGroup value={selectedTicket || ''} onValueChange={setSelectedTicket}>
+            <RadioGroup value={selectedTicket} onValueChange={setSelectedTicket}>
               {ticketOptions.map((ticket) => (
                 <div
                   key={ticket.id}
@@ -128,21 +133,44 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
                 </div>
                 <Label htmlFor="payment-apple" className="ml-2">Apple Pay</Label>
               </div>
+              <div className="payment-method mt-2">
+                <RadioGroupItem value="google" id="payment-google" />
+                <div className="h-6 w-6 bg-gray-100 rounded-full flex items-center justify-center ml-2">
+                  <span className="text-gray-500 text-xs">G</span>
+                </div>
+                <Label htmlFor="payment-google" className="ml-2">Google Pay</Label>
+              </div>
             </RadioGroup>
+          </div>
+          
+          <div className="mb-4 border-t pt-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="rewards" 
+                checked={useRewards} 
+                onCheckedChange={(checked) => setUseRewards(!!checked)} 
+              />
+              <div>
+                <Label htmlFor="rewards" className="font-medium">Use Rewards</Label>
+                <p className="text-xs text-gray-500">You have 50 points (€1.00 discount)</p>
+              </div>
+            </div>
           </div>
           
           <div className="border-t pt-4">
             <div className="flex justify-between mb-2">
               <span className="text-sm">Subtotal:</span>
-              <span>€{selectedTicket === 'student' ? '1.50' : selectedTicket === 'day' ? '8.50' : '3.00'}</span>
+              <span>€{selectedTicket === 'student' ? '5.00' : '7.00'}</span>
             </div>
-            <div className="flex justify-between mb-2">
-              <span className="text-sm">Service Fee:</span>
-              <span>€0.00</span>
-            </div>
+            {useRewards && (
+              <div className="flex justify-between mb-2 text-green-600">
+                <span className="text-sm">Rewards Applied:</span>
+                <span>-€1.00</span>
+              </div>
+            )}
             <div className="flex justify-between font-medium">
               <span>Total:</span>
-              <span>€{selectedTicket === 'student' ? '1.50' : selectedTicket === 'day' ? '8.50' : '3.00'}</span>
+              <span>{getFinalPrice()}</span>
             </div>
           </div>
         </div>
@@ -153,7 +181,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
             disabled={!selectedTicket || loading}
             className="w-full bg-mastercard-red hover:bg-mastercard-red/90"
           >
-            {loading ? 'Processing...' : 'Purchase Ticket'}
+            {loading ? 'Processing...' : `Pay Now ${getFinalPrice()}`}
           </Button>
         </DialogFooter>
       </DialogContent>

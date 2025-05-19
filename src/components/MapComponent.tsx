@@ -24,12 +24,12 @@ export const MapComponent: React.FC<MapComponentProps> = ({
   return (
     <div className={`relative bg-gray-100 overflow-hidden transition-all duration-300 rounded-lg border ${isCollapsed ? 'h-12' : 'h-64 md:h-96'}`}>
       <div 
-        className="absolute top-0 left-0 right-0 h-12 bg-white dark:bg-gray-900 border-b flex items-center justify-between px-4 z-10"
+        className="absolute top-0 left-0 right-0 h-12 bg-white dark:bg-gray-900 border-b flex items-center justify-between px-4 z-10 cursor-pointer"
         onClick={handleToggle}
       >
         <div className="flex items-center">
           <MapPin className="h-4 w-4 mr-2 text-mastercard-red" />
-          <span className="font-medium">Live Navigation</span>
+          <span className="font-medium">Dublin Map</span>
         </div>
         <Button variant="ghost" size="sm">
           {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
@@ -50,17 +50,58 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 </defs>
                 <rect width="100%" height="100%" fill="url(#grid)" />
               </svg>
-              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-mastercard-red">
-                <MapPin className="h-6 w-6" />
-              </div>
+              {/* Dublin Airport */}
               <div className="absolute left-1/4 top-1/3 transform -translate-x-1/2 -translate-y-1/2 text-blue-500">
                 <MapPin className="h-6 w-6" />
+                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium bg-white px-1 rounded">
+                  Dublin Airport
+                </div>
               </div>
-              <div className="absolute left-3/4 bottom-1/3 transform -translate-x-1/2 -translate-y-1/2 text-green-500">
+              {/* O'Connell Street */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-mastercard-red">
                 <MapPin className="h-6 w-6" />
+                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium bg-white px-1 rounded">
+                  O'Connell Street
+                </div>
+              </div>
+              {/* Govinda's Restaurant */}
+              <div className="absolute left-3/4 bottom-1/2 transform -translate-x-1/2 -translate-y-1/2 text-green-500">
+                <MapPin className="h-6 w-6" />
+                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium bg-white px-1 rounded whitespace-nowrap">
+                  Govinda's
+                </div>
+              </div>
+              
+              {/* Route line from Airport to O'Connell Street */}
+              <svg className="absolute inset-0 z-0" xmlns="http://www.w3.org/2000/svg">
+                <path 
+                  d="M 25% 33% L 50% 50%" 
+                  stroke="#EB001B" 
+                  strokeWidth="3"
+                  strokeDasharray="5,5"
+                  fill="none"
+                />
+              </svg>
+              
+              {/* Route line from O'Connell Street to Govinda's */}
+              <svg className="absolute inset-0 z-0" xmlns="http://www.w3.org/2000/svg">
+                <path 
+                  d="M 50% 50% L 75% 50%" 
+                  stroke="#22C55E" 
+                  strokeWidth="3"
+                  strokeDasharray="5,5"
+                  fill="none"
+                />
+              </svg>
+              
+              {/* Current location */}
+              <div className="absolute left-3/8 top-5/12 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="h-4 w-4 bg-blue-500 rounded-full animate-pulse border-2 border-white"></div>
               </div>
             </div>
-            <span className="text-gray-400 z-10">Map view - Interactive map will appear here</span>
+            <div className="z-10 bg-white p-2 rounded-md shadow-sm text-xs">
+              Interactive map showing your route from Dublin Airport to O'Connell Street
+            </div>
           </div>
         </div>
       )}

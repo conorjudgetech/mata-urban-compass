@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Languages, Utensils, Bus, Train } from 'lucide-react';
@@ -35,7 +36,7 @@ const Index = () => {
 
   // Initialize journey steps for airport journey
   const initializeAirportJourney = () => {
-    setDestination('Airport');
+    setDestination("O'Connell Street");
     setActiveJourney(true);
     setJourneySteps([
       {
@@ -44,7 +45,7 @@ const Index = () => {
         icon: 'start',
         status: 'completed',
         details: {
-          location: 'Barcelona Central',
+          location: 'Dublin Airport',
           time: '13:30',
         }
       },
@@ -54,29 +55,29 @@ const Index = () => {
         icon: 'ticket',
         status: 'active',
         details: {
-          price: '€12.50 (Standard) / €7.50 (Student)',
+          price: '€7.00 (€5.00 Student)',
           time: 'Next bus: 13:45',
-          instructions: 'Student ID required for discount',
+          instructions: 'Student ID discount automatically applied',
         }
       },
       {
         id: 'bus',
-        title: 'Board Bus',
+        title: 'Aircoach Bus',
         icon: 'bus',
         status: 'pending',
         details: {
-          location: 'Stop #204',
-          time: '13:45 - 14:30',
+          location: 'Zone 16',
+          time: '13:45 - 14:28',
         }
       },
       {
         id: 'arrive',
-        title: 'Airport',
+        title: "O'Connell St",
         icon: 'finish',
         status: 'pending',
         details: {
-          location: 'Terminal 2',
-          time: '14:30',
+          location: 'City Center',
+          time: '14:28',
         }
       }
     ]);
@@ -87,9 +88,9 @@ const Index = () => {
         id: 'alert-1',
         type: 'alert',
         title: 'Football Event Alert',
-        description: 'There\'s a major football event near your route that may cause delays. Consider alternative route.',
+        description: "There's a major football celebration near your route that may cause delays. Consider our suggested alternative.",
         action: {
-          label: 'View Details',
+          label: 'View Alternate Route',
           onClick: () => toast.info('Alternative routes would be shown here'),
         }
       },
@@ -97,7 +98,7 @@ const Index = () => {
         id: 'offer-1',
         type: 'offer',
         title: 'Student Discount Available',
-        description: 'We noticed you qualify for a 40% student discount on the Airport Express.',
+        description: 'Your student status qualifies you for a 30% discount on the Aircoach Express.',
         action: {
           label: 'Apply Discount',
           onClick: () => {
@@ -109,9 +110,9 @@ const Index = () => {
     ]);
   };
 
-  // Initialize journey steps for city center journey
-  const initializeCityCenterJourney = () => {
-    setDestination('City Center');
+  // Initialize journey steps for city center journey (second leg to Govinda's)
+  const initializeGovindasJourney = () => {
+    setDestination("Govinda's Restaurant");
     setActiveJourney(true);
     setJourneySteps([
       {
@@ -120,38 +121,29 @@ const Index = () => {
         icon: 'start',
         status: 'completed',
         details: {
-          location: 'Your Location',
-          time: '13:30',
+          location: "O'Connell Street",
+          time: '14:30',
         }
       },
       {
-        id: 'ticket',
-        title: 'Buy Ticket',
-        icon: 'ticket',
+        id: 'walk',
+        title: 'Walk',
+        icon: 'walk',
         status: 'active',
         details: {
-          price: '€2.40 (One-way)',
-          time: 'Next train: 13:40',
-        }
-      },
-      {
-        id: 'train',
-        title: 'Metro L3',
-        icon: 'train',
-        status: 'pending',
-        details: {
-          location: 'Diagonal Station',
-          time: '13:40 - 14:00',
+          distance: '0.2 km',
+          time: '5 minutes',
         }
       },
       {
         id: 'arrive',
-        title: 'Catalunya',
+        title: "Govinda's",
         icon: 'finish',
         status: 'pending',
         details: {
-          location: 'Plaza Catalunya',
-          time: '14:00',
+          location: 'Middle Abbey Street',
+          time: '14:35',
+          instructions: 'Vegan restaurant with affordable meals',
         }
       }
     ]);
@@ -161,17 +153,17 @@ const Index = () => {
       {
         id: 'info-1',
         type: 'info',
-        title: 'Metro Info',
-        description: 'The L3 line runs every 4 minutes during peak hours.',
+        title: 'Restaurant Info',
+        description: "Govinda's is a popular vegan restaurant with hearty meals. Perfect match for your dietary preferences!",
       },
       {
         id: 'time-1',
         type: 'time',
-        title: 'Free Time Before Train',
-        description: 'You have about 10 minutes before your train. There\'s a café nearby if you want a quick coffee.',
+        title: 'Open Hours',
+        description: 'Open until 21:00 today. No reservation needed for lunch service.',
         action: {
-          label: 'Show Nearby',
-          onClick: () => toast.info('Nearby café options would be shown here'),
+          label: 'See Menu',
+          onClick: () => toast.info('Restaurant menu would be shown here'),
         }
       }
     ]);
@@ -195,7 +187,7 @@ const Index = () => {
       if (step.id === 'ticket') {
         return { ...step, status: 'completed' };
       }
-      if (step.id === 'bus' || step.id === 'train') {
+      if (step.id === 'bus') {
         return { ...step, status: 'active' };
       }
       return step;
@@ -204,9 +196,9 @@ const Index = () => {
     // Add ticket to wallet
     const newTicket = {
       id: Date.now().toString(),
-      type: destination === 'Airport' ? 'Airport Express' : 'Metro Day Pass',
+      type: 'Aircoach Express Bus',
       destination: destination,
-      validFrom: '19 May, 13:40',
+      validFrom: '19 May, 13:45',
       validUntil: '19 May, 23:59',
       qrCode: 'qr-code-placeholder',
     };
@@ -220,13 +212,13 @@ const Index = () => {
   const handleSuggestAction = (action: string) => {
     if (action === 'airport') {
       initializeAirportJourney();
-    } else if (action === 'city-center') {
-      initializeCityCenterJourney();
+    } else if (action === 'govindas') {
+      initializeGovindasJourney();
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       <Header />
       
       <main className="flex-1 container mx-auto p-4 md:p-6 max-w-6xl">
@@ -331,10 +323,10 @@ const Index = () => {
                 <Button 
                   variant="outline" 
                   className="h-auto py-4 flex flex-col items-center gap-2"
-                  onClick={() => initializeCityCenterJourney()}
+                  onClick={() => initializeGovindasJourney()}
                 >
                   <Train className="h-5 w-5 text-mastercard-red" />
-                  <span>City Metro</span>
+                  <span>City Tour</span>
                 </Button>
               </div>
             </div>

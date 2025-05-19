@@ -1,9 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Image, Send } from 'lucide-react';
+import { Camera, Image, Send, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { MessageBubble } from './MessageBubble';
 
 interface Message {
@@ -28,7 +28,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     {
       id: '1',
       sender: 'assistant',
-      text: 'Welcome to Mastercard Travel Assistant! Where do you want to go today?',
+      text: 'Hello Conor! I\'m your Mastercard Travel Assistant. How can I help you today?',
       timestamp: new Date(),
     },
   ]);
@@ -61,18 +61,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setTimeout(() => {
       let responseText = '';
       
-      if (input.toLowerCase().includes('airport')) {
-        responseText = "I can help you get to the airport! Based on your location, I recommend taking the Airport Express Bus. There's a student discount available. Would you like to see ticket options?";
+      if (input.toLowerCase().includes("o'connell") || input.toLowerCase().includes('city center')) {
+        responseText = "I can help you get to O'Connell Street from Dublin Airport! I recommend taking the Aircoach Express Bus. There's a student discount available for you. Would you like to see the journey details?";
         if (onSuggestAction) {
           onSuggestAction('airport');
         }
-      } else if (input.toLowerCase().includes('city center') || input.toLowerCase().includes('downtown')) {
-        responseText = "I'll help you navigate to the city center. You can take the Metro Line 1 directly there. Would you like me to help you purchase tickets?";
+      } else if (input.toLowerCase().includes('govinda') || input.toLowerCase().includes('restaurant') || input.toLowerCase().includes('food')) {
+        responseText = "I've found Govinda's Vegan Restaurant nearby, which matches your dietary preferences. It's just a short 5-minute walk from O'Connell Street. Would you like directions?";
         if (onSuggestAction) {
-          onSuggestAction('city-center');
+          onSuggestAction('govindas');
         }
       } else {
-        responseText = "I'll help you plan that journey. Where are you starting from?";
+        responseText = "I'll help you plan that journey. Based on your location at Dublin Airport, I can suggest routes to popular destinations. Where would you like to go?";
       }
       
       const newAssistantMessage: Message = {
@@ -99,6 +99,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
+  const handleVoiceInput = () => {
+    toast.info("Voice input activated");
+    // Simulate voice recognition
+    setTimeout(() => {
+      setInput("How do I get to O'Connell Street from the airport?");
+      toast.success("Voice input transcribed!");
+    }, 1500);
+  };
+
   const renderQuickActions = () => {
     return (
       <div className="flex flex-wrap gap-2 mb-4">
@@ -106,17 +115,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           variant="outline"
           size="sm"
           onClick={() => {
-            setInput("How do I get to the airport?");
-            setTimeout(handleSend, 100);
-          }}
-        >
-          Airport
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setInput("Take me to the city center");
+            setInput("How do I get to O'Connell Street from Dublin Airport?");
             setTimeout(handleSend, 100);
           }}
         >
@@ -126,21 +125,31 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           variant="outline"
           size="sm"
           onClick={() => {
-            setInput("I need help with the metro");
+            setInput("I'm looking for a vegan restaurant nearby");
             setTimeout(handleSend, 100);
           }}
         >
-          Metro Help
+          Vegan Food
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => {
-            setInput("Food recommendations nearby");
+            setInput("What time is the next bus to O'Connell Street?");
             setTimeout(handleSend, 100);
           }}
         >
-          Food Nearby
+          Bus Times
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setInput("Where can I use my Mastercard for transit?");
+            setTimeout(handleSend, 100);
+          }}
+        >
+          Payment Help
         </Button>
       </div>
     );
@@ -165,6 +174,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <Button
             variant="outline"
             size="icon"
+            onClick={handleVoiceInput}
+            className="shrink-0"
+          >
+            <Mic className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
             onClick={handleUploadImage}
             className="shrink-0"
           >
@@ -180,7 +197,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </Button>
           <div className="flex-1 flex gap-2">
             <Input
-              placeholder="Type your message..."
+              placeholder="Ask me something..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}

@@ -8,6 +8,7 @@ import {
   Ticket, 
   Utensils, 
   ArrowRight,
+  ArrowUpRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -15,13 +16,14 @@ import { Button } from '@/components/ui/button';
 export interface JourneyStep {
   id: string;
   title: string;
-  icon: 'start' | 'ticket' | 'bus' | 'train' | 'switch' | 'eat' | 'finish';
+  icon: 'start' | 'ticket' | 'bus' | 'train' | 'switch' | 'eat' | 'finish' | 'walk';
   status: 'pending' | 'active' | 'completed';
   details?: {
     time?: string;
     price?: string;
     location?: string;
     instructions?: string;
+    distance?: string;
   };
 }
 
@@ -52,6 +54,8 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
         return <Utensils className="h-5 w-5" />;
       case 'finish':
         return <MapPin className="h-5 w-5" />;
+      case 'walk':
+        return <ArrowUpRight className="h-5 w-5" />;
       default:
         return <MapPin className="h-5 w-5" />;
     }
@@ -118,6 +122,12 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                       <div className="flex justify-between mb-1">
                         <span>Location:</span>
                         <span className="font-medium">{step.details.location}</span>
+                      </div>
+                    )}
+                    {step.details.distance && (
+                      <div className="flex justify-between mb-1">
+                        <span>Distance:</span>
+                        <span className="font-medium">{step.details.distance}</span>
                       </div>
                     )}
                     {step.details.instructions && (

@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 
 interface OnboardingModalProps {
@@ -26,6 +27,9 @@ interface OnboardingModalProps {
 
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
+  const [firstName, setFirstName] = useState('Conor');
+  const [lastName, setLastName] = useState('Judge');
+  const [email, setEmail] = useState('conor.judge@example.com');
   
   const nextStep = () => {
     if (step === 3) {
@@ -41,31 +45,62 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         <DialogHeader>
           <DialogTitle>Welcome to Mastercard Travel Assistant</DialogTitle>
           <DialogDescription>
-            Let's set up your preferences to personalize your travel experience.
+            Let's set up your travel profile to personalize your experience.
           </DialogDescription>
         </DialogHeader>
         
         {step === 1 && (
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="language">Preferred Language</Label>
-              <Select defaultValue="en">
-                <SelectTrigger id="language">
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
-                  <SelectItem value="de">German</SelectItem>
-                  <SelectItem value="it">Italian</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="firstName">First Name</Label>
+              <Input 
+                id="firstName" 
+                value={firstName} 
+                onChange={(e) => setFirstName(e.target.value)} 
+              />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="dietary">Dietary Preferences</Label>
-              <Select defaultValue="none">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input 
+                id="lastName" 
+                value={lastName} 
+                onChange={(e) => setLastName(e.target.value)} 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input 
+                id="email" 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="status">Traveler Status</Label>
+              <Select defaultValue="student">
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="student">Student</SelectItem>
+                  <SelectItem value="tourist">Tourist</SelectItem>
+                  <SelectItem value="resident">Resident</SelectItem>
+                  <SelectItem value="business">Business Traveler</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+        
+        {step === 2 && (
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="dietary">Dietary Preference</Label>
+              <Select defaultValue="vegan">
                 <SelectTrigger id="dietary">
                   <SelectValue placeholder="Select preference" />
                 </SelectTrigger>
@@ -79,29 +114,19 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                 </SelectContent>
               </Select>
             </div>
-          </div>
-        )}
-        
-        {step === 2 && (
-          <div className="space-y-4 py-4">
-            <h3 className="text-sm font-medium">Special Discounts Eligibility</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="student" className="flex-1">Student</Label>
-                <Switch id="student" />
-              </div>
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="senior" className="flex-1">Senior (65+)</Label>
-                <Switch id="senior" />
-              </div>
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="disability" className="flex-1">Disability</Label>
-                <Switch id="disability" />
-              </div>
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="family" className="flex-1">Family Discount</Label>
-                <Switch id="family" />
-              </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="travel">Travel Preference</Label>
+              <Select defaultValue="budget">
+                <SelectTrigger id="travel">
+                  <SelectValue placeholder="Select preference" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="budget">Budget</SelectItem>
+                  <SelectItem value="low-emissions">Low-emissions</SelectItem>
+                  <SelectItem value="fastest">Fastest</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         )}
@@ -126,12 +151,6 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                 </div>
                 <span>Google Pay</span>
               </div>
-              <div className="payment-method">
-                <div className="h-6 w-6 bg-gray-200 rounded-full flex items-center justify-center">
-                  <span className="text-gray-500 text-xs">$</span>
-                </div>
-                <span>Cash</span>
-              </div>
             </div>
             
             <div className="pt-4">
@@ -139,7 +158,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                 <Switch id="location" defaultChecked />
                 <Label htmlFor="location">Allow location access for better routing</Label>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 We'll use your location to provide better transit recommendations.
               </p>
             </div>
