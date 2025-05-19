@@ -206,6 +206,35 @@ const Index = () => {
     toast.success(`Your ticket to ${destination} has been added to your wallet!`);
   };
 
+  const handleSendMessage = (message: string) => {
+    // Check for keywords in the message to trigger appropriate journeys
+    if (message.toLowerCase().includes("o'connell") || 
+        message.toLowerCase().includes("airport") || 
+        message.toLowerCase().includes("city center") || 
+        message.toLowerCase().includes("downtown")) {
+      // Clear any existing journey before initializing a new one
+      setJourneySteps([]);
+      setSuggestions([]);
+      
+      // Add a small delay for visual effect
+      setTimeout(() => {
+        initializeAirportJourney();
+      }, 800);
+    } else if (message.toLowerCase().includes("govinda") || 
+               message.toLowerCase().includes("restaurant") || 
+               message.toLowerCase().includes("food") || 
+               message.toLowerCase().includes("eat")) {
+      // Clear any existing journey before initializing a new one
+      setJourneySteps([]);
+      setSuggestions([]);
+      
+      // Add a small delay for visual effect
+      setTimeout(() => {
+        initializeGovindasJourney();
+      }, 800);
+    }
+  };
+
   const handleSuggestAction = (action: string) => {
     if (action === 'airport') {
       initializeAirportJourney();
@@ -243,7 +272,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column - Chat */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden">
               {/* Map component */}
               <div className="border-b">
                 <MapComponent />
@@ -252,7 +281,7 @@ const Index = () => {
               {/* Chat interface */}
               <div className="h-[400px]">
                 <ChatInterface 
-                  onSendMessage={() => {}}
+                  onSendMessage={handleSendMessage}
                   onUploadImage={() => setShowPhotoTranslate(true)}
                   onSuggestAction={handleSuggestAction}
                 />
@@ -264,7 +293,7 @@ const Index = () => {
           <div className="space-y-6">
             {/* Journey visualizer */}
             {activeJourney && journeySteps.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border overflow-hidden p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden p-4">
                 <h2 className="text-sm font-medium mb-3">Your Journey to {destination}</h2>
                 <JourneyVisualizer 
                   steps={journeySteps} 
@@ -275,7 +304,7 @@ const Index = () => {
             
             {/* Contextual suggestions */}
             {suggestions.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border overflow-hidden p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden p-4">
                 <h2 className="text-sm font-medium mb-3">Smart Suggestions</h2>
                 <ContextualSuggestions 
                   suggestions={suggestions}
@@ -286,7 +315,7 @@ const Index = () => {
             
             {/* Loyalty info */}
             {tickets.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border p-4">
                 <h2 className="text-sm font-medium mb-3">Mastercard Rewards</h2>
                 <div className="flex items-center justify-between">
                   <div>

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bell, Menu, User } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -37,16 +37,22 @@ export const Header: React.FC = () => {
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="rounded-full h-9 w-9">
               <User className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="bg-white dark:bg-gray-900 border border-gray-200 rounded-xl shadow-lg p-2 w-48">
+            <DropdownMenuLabel className="font-semibold">My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setShowProfile(true)}>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Help & Support</DropdownMenuItem>
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowProfile(true)} className="rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem className="rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+              Help & Support
+            </DropdownMenuItem>
+            <DropdownMenuItem className="rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+              Log out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

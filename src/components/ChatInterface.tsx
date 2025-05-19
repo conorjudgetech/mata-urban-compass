@@ -66,18 +66,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setTimeout(() => {
       let responseText = '';
       
-      if (input.toLowerCase().includes("o'connell") || input.toLowerCase().includes('city center')) {
+      if (input.toLowerCase().includes("o'connell") || input.toLowerCase().includes('city center') || input.toLowerCase().includes('airport')) {
         responseText = "I can help you get to O'Connell Street from Dublin Airport! I recommend taking the Aircoach Express Bus. There's a student discount available for you. Would you like to see the journey details?";
         if (onSuggestAction) {
           onSuggestAction('airport');
         }
-      } else if (input.toLowerCase().includes('govinda') || input.toLowerCase().includes('restaurant') || input.toLowerCase().includes('food')) {
+      } else if (input.toLowerCase().includes('govinda') || input.toLowerCase().includes('restaurant') || input.toLowerCase().includes('food') || input.toLowerCase().includes('eat')) {
         responseText = "I've found Govinda's Vegan Restaurant nearby, which matches your dietary preferences. It's just a short 5-minute walk from O'Connell Street. Would you like directions?";
         if (onSuggestAction) {
           onSuggestAction('govindas');
         }
+      } else if (input.toLowerCase().includes('ticket') || input.toLowerCase().includes('buy') || input.toLowerCase().includes('purchase')) {
+        responseText = "I can help you purchase a ticket for the Aircoach Express Bus. Would you like to proceed with buying a ticket to O'Connell Street?";
+        if (onSuggestAction) {
+          onSuggestAction('airport');
+        }
       } else {
-        responseText = "I'll help you plan that journey. Based on your location at Dublin Airport, I can suggest routes to popular destinations. Where would you like to go?";
+        responseText = "I'll help you plan that journey. Based on your location at Dublin Airport, I can suggest routes to popular destinations like O'Connell Street in the city center. Where would you like to go?";
       }
       
       const newAssistantMessage: Message = {
@@ -160,7 +165,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             variant={isRecording ? "default" : "outline"}
             size="icon"
             onClick={handleVoiceInput}
-            className={`shrink-0 ${isRecording ? 'bg-mastercard-red animate-pulse' : ''}`}
+            className={`shrink-0 rounded-full ${isRecording ? 'bg-mastercard-red animate-pulse' : ''}`}
           >
             <Mic className="h-5 w-5" />
           </Button>
@@ -168,7 +173,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             variant="outline"
             size="icon"
             onClick={handleImageUpload}
-            className="shrink-0"
+            className="shrink-0 rounded-full"
           >
             <Camera className="h-5 w-5" />
           </Button>
@@ -176,7 +181,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             variant={isTranslating ? "default" : "outline"}
             size="icon"
             onClick={handleTranslate}
-            className={`shrink-0 ${isTranslating ? 'bg-blue-500' : ''}`}
+            className={`shrink-0 rounded-full ${isTranslating ? 'bg-blue-500' : ''}`}
           >
             <Languages className="h-5 w-5" />
           </Button>
@@ -186,9 +191,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="flex-1"
+              className="flex-1 rounded-full border-gray-300"
             />
-            <Button onClick={handleSend} className="bg-mastercard-red hover:bg-mastercard-red/90">
+            <Button 
+              onClick={handleSend} 
+              className="bg-mastercard-red hover:bg-mastercard-red/90 rounded-full"
+            >
               <Send className="h-5 w-5" />
             </Button>
           </div>

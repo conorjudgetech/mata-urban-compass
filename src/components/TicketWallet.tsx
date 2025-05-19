@@ -59,7 +59,7 @@ export const TicketWallet: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2">
+        <Button variant="ghost" className="flex items-center gap-2 rounded-full">
           <Ticket className="h-4 w-4" />
           <span className="hidden sm:inline">My Tickets</span>
           {activeTickets.length > 0 && (
@@ -69,14 +69,14 @@ export const TicketWallet: React.FC = () => {
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden rounded-xl">
+        <DialogHeader className="p-4 bg-white dark:bg-gray-900">
           <DialogTitle>Your Tickets & Passes</DialogTitle>
           <DialogDescription>
             All your active and upcoming transit tickets
           </DialogDescription>
         </DialogHeader>
-        <div className="p-4 pb-6">
+        <div className="p-4 pb-6 max-h-[70vh] overflow-y-auto bg-white dark:bg-gray-900">
           {tickets.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No tickets in your wallet yet
@@ -84,7 +84,7 @@ export const TicketWallet: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {tickets.map((ticket) => (
-                <Card key={ticket.id} className="overflow-hidden">
+                <Card key={ticket.id} className="overflow-hidden rounded-xl border border-gray-200">
                   <div className="h-2 mastercard-gradient w-full" />
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center mb-2">

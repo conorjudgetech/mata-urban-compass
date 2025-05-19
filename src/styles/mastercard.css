@@ -30,3 +30,39 @@
     color: #F79E1B;
   }
 }
+
+/* Journey step styling */
+.journey-step {
+  @apply bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border cursor-pointer transition-all;
+  min-width: 150px;
+}
+
+.journey-step:hover {
+  @apply border-mastercard-red;
+}
+
+.journey-step.active {
+  @apply border-mastercard-red;
+}
+
+.journey-step.completed {
+  @apply border-green-500;
+}
+
+.journey-line {
+  @apply mx-2;
+}
+
+/* Payment method styling */
+.payment-method {
+  @apply flex items-center p-3 border rounded-xl;
+}
+
+.payment-method.selected {
+  @apply border-mastercard-red;
+}
+
+/* Modal content */
+.modal-content {
+  @apply bg-white dark:bg-gray-900 border-0 rounded-xl shadow-lg;
+}

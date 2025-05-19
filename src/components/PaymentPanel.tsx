@@ -83,7 +83,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-900 rounded-xl">
         <DialogHeader>
           <DialogTitle>Purchase Transit Ticket</DialogTitle>
           <DialogDescription>
@@ -98,7 +98,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
               {ticketOptions.map((ticket) => (
                 <div
                   key={ticket.id}
-                  className="flex items-center justify-between space-x-2 border rounded-lg p-3 mb-2"
+                  className="flex items-center justify-between space-x-2 border rounded-lg p-3 mb-2 hover:border-mastercard-red transition-colors"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value={ticket.id} id={`ticket-${ticket.id}`} />
@@ -121,19 +121,19 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
           <div className="mb-4">
             <h4 className="text-sm font-medium mb-3">Payment Method</h4>
             <RadioGroup value={selectedPayment} onValueChange={setSelectedPayment}>
-              <div className="payment-method selected">
+              <div className="payment-method selected rounded-lg hover:border-mastercard-red transition-colors">
                 <RadioGroupItem value="mastercard" id="payment-mastercard" />
                 <div className="h-6 w-6 bg-gradient-to-r from-mastercard-red to-mastercard-yellow rounded-full ml-2"></div>
                 <Label htmlFor="payment-mastercard" className="ml-2">Mastercard •••• 1234</Label>
               </div>
-              <div className="payment-method mt-2">
+              <div className="payment-method mt-2 rounded-lg">
                 <RadioGroupItem value="apple" id="payment-apple" />
                 <div className="h-6 w-6 bg-black rounded-full flex items-center justify-center ml-2">
                   <span className="text-white text-xs">A</span>
                 </div>
                 <Label htmlFor="payment-apple" className="ml-2">Apple Pay</Label>
               </div>
-              <div className="payment-method mt-2">
+              <div className="payment-method mt-2 rounded-lg">
                 <RadioGroupItem value="google" id="payment-google" />
                 <div className="h-6 w-6 bg-gray-100 rounded-full flex items-center justify-center ml-2">
                   <span className="text-gray-500 text-xs">G</span>
@@ -179,7 +179,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
           <Button
             onClick={handlePurchase}
             disabled={!selectedTicket || loading}
-            className="w-full bg-mastercard-red hover:bg-mastercard-red/90"
+            className="w-full bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg"
           >
             {loading ? 'Processing...' : `Pay Now ${getFinalPrice()}`}
           </Button>

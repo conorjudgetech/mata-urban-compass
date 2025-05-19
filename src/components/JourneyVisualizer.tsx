@@ -82,7 +82,7 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
               >
                 <div className="flex items-center gap-2">
                   <div className={cn(
-                    "p-1 rounded-full",
+                    "p-1.5 rounded-full",
                     step.status === 'completed' 
                       ? "bg-green-100 text-green-600" 
                       : step.status === 'active'
@@ -136,7 +136,7 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                       </div>
                     )}
                     {step.status === 'active' && (
-                      <Button className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90">
+                      <Button className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg">
                         {step.icon === 'ticket' ? 'Buy Ticket' : 'Details'}
                       </Button>
                     )}
