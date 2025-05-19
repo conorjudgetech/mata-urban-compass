@@ -10,10 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { NotificationPanel } from './NotificationPanel';
+import { TicketWallet } from './TicketWallet';
+import { ProfileModal } from './ProfileModal';
 
 export const Header: React.FC = () => {
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   
   return (
     <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b shadow-sm px-4 py-2 flex items-center justify-between">
@@ -30,16 +31,9 @@ export const Header: React.FC = () => {
         </div>
       </div>
       
-      <div className="flex items-center gap-2">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="relative"
-          onClick={() => setShowNotifications(!showNotifications)}
-        >
-          <Bell className="h-5 w-5" />
-          <span className="notification-badge">3</span>
-        </Button>
+      <div className="flex items-center gap-4">
+        {/* My Tickets moved to the top navbar */}
+        <TicketWallet />
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -50,21 +44,15 @@ export const Header: React.FC = () => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Travel Preferences</DropdownMenuItem>
-            <DropdownMenuItem>Payment Methods</DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setShowProfile(true)}>Profile</DropdownMenuItem>
             <DropdownMenuItem>Help & Support</DropdownMenuItem>
             <DropdownMenuItem>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       
-      {showNotifications && (
-        <div className="absolute right-4 top-14 z-50">
-          <NotificationPanel onClose={() => setShowNotifications(false)} />
-        </div>
-      )}
+      {/* Profile Modal */}
+      <ProfileModal isOpen={showProfile} onClose={() => setShowProfile(false)} />
     </header>
   );
 };

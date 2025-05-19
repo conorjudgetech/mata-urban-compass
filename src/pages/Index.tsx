@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Languages, Utensils, Bus, Train } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { OnboardingModal } from '@/components/OnboardingModal';
@@ -10,7 +8,6 @@ import { ChatInterface } from '@/components/ChatInterface';
 import { JourneyVisualizer, JourneyStep } from '@/components/JourneyVisualizer';
 import { MapComponent } from '@/components/MapComponent';
 import { PaymentPanel } from '@/components/PaymentPanel';
-import { TicketWallet } from '@/components/TicketWallet';
 import { ContextualSuggestions } from '@/components/ContextualSuggestions';
 import { PhotoTranslateModal } from '@/components/PhotoTranslateModal';
 
@@ -221,7 +218,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       <Header />
       
-      <main className="flex-1 container mx-auto p-4 md:p-6 max-w-6xl">
+      <main className="flex-1 container mx-auto p-4 max-w-6xl">
         {/* Initial onboarding modal */}
         <OnboardingModal
           isOpen={showOnboarding}
@@ -242,28 +239,11 @@ const Index = () => {
           destination={destination}
         />
         
-        {/* App title and wallet */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Mastercard Travel Assistant</h1>
-          <TicketWallet tickets={tickets} />
-        </div>
-        
         {/* Main layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column - Chat */}
           <div className="lg:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border overflow-hidden">
-              {/* Journey visualizer */}
-              {activeJourney && journeySteps.length > 0 && (
-                <div className="p-4 border-b">
-                  <h2 className="text-sm font-medium mb-3">Your Journey to {destination}</h2>
-                  <JourneyVisualizer 
-                    steps={journeySteps} 
-                    onStepClick={handleStepClick}
-                  />
-                </div>
-              )}
-              
               {/* Map component */}
               <div className="border-b">
                 <MapComponent />
@@ -280,11 +260,22 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Right column - Contextual info */}
+          {/* Right column - Journey & Suggestions */}
           <div className="space-y-6">
+            {/* Journey visualizer */}
+            {activeJourney && journeySteps.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border overflow-hidden p-4">
+                <h2 className="text-sm font-medium mb-3">Your Journey to {destination}</h2>
+                <JourneyVisualizer 
+                  steps={journeySteps} 
+                  onStepClick={handleStepClick}
+                />
+              </div>
+            )}
+            
             {/* Contextual suggestions */}
             {suggestions.length > 0 && (
-              <div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border overflow-hidden p-4">
                 <h2 className="text-sm font-medium mb-3">Smart Suggestions</h2>
                 <ContextualSuggestions 
                   suggestions={suggestions}
@@ -292,44 +283,6 @@ const Index = () => {
                 />
               </div>
             )}
-            
-            {/* Tools and quick actions */}
-            <div>
-              <h2 className="text-sm font-medium mb-3">Helpful Tools</h2>
-              <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-4 flex flex-col items-center gap-2"
-                  onClick={() => setShowPhotoTranslate(true)}
-                >
-                  <Languages className="h-5 w-5 text-mastercard-red" />
-                  <span>Translate Photo</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-4 flex flex-col items-center gap-2"
-                >
-                  <Utensils className="h-5 w-5 text-mastercard-red" />
-                  <span>Food Nearby</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-4 flex flex-col items-center gap-2"
-                  onClick={() => initializeAirportJourney()}
-                >
-                  <Bus className="h-5 w-5 text-mastercard-red" />
-                  <span>Airport Bus</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-4 flex flex-col items-center gap-2"
-                  onClick={() => initializeGovindasJourney()}
-                >
-                  <Train className="h-5 w-5 text-mastercard-red" />
-                  <span>City Tour</span>
-                </Button>
-              </div>
-            </div>
             
             {/* Loyalty info */}
             {tickets.length > 0 && (

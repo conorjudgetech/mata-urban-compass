@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Image, Send, Mic } from 'lucide-react';
+import { Camera, Image, Mic, Send, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -11,6 +11,7 @@ interface Message {
   sender: 'user' | 'assistant';
   text: string;
   timestamp: Date;
+  translated?: boolean;
 }
 
 interface ChatInterfaceProps {
@@ -33,6 +34,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     },
   ]);
   const [input, setInput] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -47,6 +50,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       sender: 'user',
       text: input,
       timestamp: new Date(),
+      translated: isTranslating
     };
     
     setMessages(prev => [...prev, newUserMessage]);
@@ -56,6 +60,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
     
     setInput('');
+    setIsTranslating(false);
     
     // Simulate response
     setTimeout(() => {
@@ -92,74 +97,54 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  const handleUploadImage = () => {
-    toast.info("Photo upload feature activated");
+  const handleVoiceInput = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      // Simulate voice transcription completion
+      setInput("How do I get to O'Connell Street from the airport?");
+      toast.success("Voice input transcribed!");
+    } else {
+      setIsRecording(true);
+      toast.info("Voice recording started...");
+      // Simulate recording for 2 seconds
+      setTimeout(() => {
+        if (isRecording) {
+          setIsRecording(false);
+          setInput("How do I get to O'Connell Street from the airport?");
+          toast.success("Voice input transcribed!");
+        }
+      }, 2000);
+    }
+  };
+
+  const handleImageUpload = () => {
+    toast.info("Camera activated");
     if (onUploadImage) {
       onUploadImage();
     }
   };
 
-  const handleVoiceInput = () => {
-    toast.info("Voice input activated");
-    // Simulate voice recognition
-    setTimeout(() => {
-      setInput("How do I get to O'Connell Street from the airport?");
-      toast.success("Voice input transcribed!");
-    }, 1500);
-  };
-
-  const renderQuickActions = () => {
-    return (
-      <div className="flex flex-wrap gap-2 mb-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setInput("How do I get to O'Connell Street from Dublin Airport?");
-            setTimeout(handleSend, 100);
-          }}
-        >
-          City Center
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setInput("I'm looking for a vegan restaurant nearby");
-            setTimeout(handleSend, 100);
-          }}
-        >
-          Vegan Food
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setInput("What time is the next bus to O'Connell Street?");
-            setTimeout(handleSend, 100);
-          }}
-        >
-          Bus Times
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setInput("Where can I use my Mastercard for transit?");
-            setTimeout(handleSend, 100);
-          }}
-        >
-          Payment Help
-        </Button>
-      </div>
-    );
+  const handleTranslate = () => {
+    setIsTranslating(!isTranslating);
+    if (!isTranslating) {
+      // If turning translation on
+      if (input) {
+        // Simulate translation of current input
+        const originalText = input;
+        setInput(`Translated: ${originalText}`);
+        toast.success("Text translated!");
+      } else {
+        toast.info("Translation mode activated. Your next message will be translated.");
+      }
+    } else {
+      // If turning translation off
+      toast.info("Translation mode deactivated");
+    }
   };
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4">
-        {messages.length === 1 && renderQuickActions()}
-        
         {messages.map((message) => (
           <MessageBubble
             key={message.id}
@@ -172,32 +157,32 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div className="border-t p-4 bg-white dark:bg-gray-900">
         <div className="flex gap-2">
           <Button
-            variant="outline"
+            variant={isRecording ? "default" : "outline"}
             size="icon"
             onClick={handleVoiceInput}
-            className="shrink-0"
+            className={`shrink-0 ${isRecording ? 'bg-mastercard-red animate-pulse' : ''}`}
           >
             <Mic className="h-5 w-5" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            onClick={handleUploadImage}
+            onClick={handleImageUpload}
             className="shrink-0"
           >
             <Camera className="h-5 w-5" />
           </Button>
           <Button
-            variant="outline"
+            variant={isTranslating ? "default" : "outline"}
             size="icon"
-            onClick={handleUploadImage}
-            className="shrink-0"
+            onClick={handleTranslate}
+            className={`shrink-0 ${isTranslating ? 'bg-blue-500' : ''}`}
           >
-            <Image className="h-5 w-5" />
+            <Languages className="h-5 w-5" />
           </Button>
           <div className="flex-1 flex gap-2">
             <Input
-              placeholder="Ask me something..."
+              placeholder={isTranslating ? "Type to translate..." : "Ask me something..."}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}

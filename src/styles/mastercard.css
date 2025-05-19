@@ -1,0 +1,32 @@
+
+/* Mastercard gradient classes */
+.mastercard-gradient {
+  background: linear-gradient(90deg, #EB001B 0%, #F79E1B 100%);
+}
+
+.mastercard-red {
+  color: #EB001B;
+}
+
+.mastercard-yellow {
+  color: #F79E1B;
+}
+
+/* Add Tailwind classes for Mastercard colors */
+@layer utilities {
+  .bg-mastercard-red {
+    background-color: #EB001B;
+  }
+  
+  .bg-mastercard-yellow {
+    background-color: #F79E1B;
+  }
+  
+  .text-mastercard-red {
+    color: #EB001B;
+  }
+  
+  .text-mastercard-yellow {
+    color: #F79E1B;
+  }
+}
