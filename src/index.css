@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,8 +16,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -30,24 +33,17 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 0 72% 51%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -61,8 +57,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -78,7 +74,8 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 0 72% 51%;
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -96,6 +93,50 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+
+  .journey-step {
+    @apply relative px-4 py-3 bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer;
+  }
+
+  .journey-step.active {
+    @apply border-mastercard-red shadow-md;
+  }
+
+  .journey-step.completed {
+    @apply bg-secondary;
+  }
+
+  .journey-line {
+    @apply absolute top-1/2 -right-4 w-8 h-0.5 bg-gray-300 z-0;
+  }
+
+  .chat-message {
+    @apply mb-4 p-4 rounded-lg max-w-[80%];
+  }
+
+  .chat-message.user {
+    @apply bg-gray-100 ml-auto;
+  }
+
+  .chat-message.assistant {
+    @apply bg-mastercard-orange/10 mr-auto;
+  }
+
+  .notification-badge {
+    @apply absolute -top-1 -right-1 w-5 h-5 bg-mastercard-red text-white text-xs flex items-center justify-center rounded-full;
+  }
+
+  .payment-method {
+    @apply flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-all;
+  }
+
+  .payment-method.selected {
+    @apply border-mastercard-red bg-mastercard-red/5;
+  }
+
+  .mastercard-gradient {
+    @apply bg-gradient-to-r from-mastercard-red via-mastercard-orange to-mastercard-yellow;
   }
 }
