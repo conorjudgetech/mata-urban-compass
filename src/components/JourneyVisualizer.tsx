@@ -137,7 +137,7 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                     )}
                     {step.status === 'active' && (
                       <Button className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg">
-                        {step.icon === 'ticket' ? 'Buy Ticket' : 'Details'}
+                        {step.icon === 'ticket' ? 'Buy Ticket' : step.icon === 'bus' ? 'Book Bus' : 'Details'}
                       </Button>
                     )}
                   </div>

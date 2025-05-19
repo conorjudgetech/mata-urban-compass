@@ -18,18 +18,20 @@ interface ChatInterfaceProps {
   onSendMessage?: (message: string) => void;
   onUploadImage?: () => void;
   onSuggestAction?: (action: string) => void;
+  journeyState?: string;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ 
   onSendMessage,
   onUploadImage,
-  onSuggestAction
+  onSuggestAction,
+  journeyState = 'none'
 }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       sender: 'assistant',
-      text: 'Hello Conor! I\'m your Mastercard Travel Assistant. How can I help you today?',
+      text: 'Hello! I\'m your Mastercard Travel Assistant. How can I help you today?',
       timestamp: new Date(),
     },
   ]);
@@ -41,6 +43,50 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Add a message based on journey state changes
+  useEffect(() => {
+    const addSystemMessage = (text: string) => {
+      const newMessage: Message = {
+        id: `assistant-${Date.now()}`,
+        sender: 'assistant',
+        text,
+        timestamp: new Date(),
+      };
+      
+      setMessages(prev => [...prev, newMessage]);
+    };
+    
+    switch(journeyState) {
+      case 'selecting_route':
+        addSystemMessage("I can help you get to O'Connell Street from Dublin Airport! I've found two options for you: Aircoach Express Bus (€7.00, with student discount €5.00) or Taxi (€30.00). Which would you prefer?");
+        break;
+      case 'route_selected':
+        addSystemMessage("Great choice! Would you like to purchase a ticket for this journey now?");
+        break;
+      case 'ticket_purchased':
+        addSystemMessage("Your ticket has been purchased and added to your wallet! Have you boarded the bus yet?");
+        break;
+      case 'boarding_bus':
+        addSystemMessage("Great! You're now aboard the Aircoach Express Bus to O'Connell Street. The journey should take about 43 minutes. I'll keep you updated.");
+        break;
+      case 'on_bus':
+        addSystemMessage("You're making good progress on your journey! Let me know when you've arrived at O'Connell Street.");
+        break;
+      case 'arrived_oconnell':
+        addSystemMessage("Welcome to O'Connell Street! I've noticed there's a Govinda's Vegan Restaurant nearby that matches your dietary preferences. Would you like directions?");
+        break;
+      case 'selecting_restaurant':
+        addSystemMessage("Govinda's is a popular vegan restaurant just a 5-minute walk from here. Would you like me to guide you there?");
+        break;
+      case 'walking_to_restaurant':
+        addSystemMessage("I've mapped out the shortest route to Govinda's Restaurant. It's just a short walk down Abbey Street. Let me know when you've arrived!");
+        break;
+      case 'arrived_govindas':
+        addSystemMessage("You've arrived at Govinda's Restaurant! Enjoy your meal. Remember to pay with your Mastercard to earn additional rewards points. Is there anything else you need?");
+        break;
+    }
+  }, [journeyState]);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -61,39 +107,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     setInput('');
     setIsTranslating(false);
-    
-    // Simulate response
-    setTimeout(() => {
-      let responseText = '';
-      
-      if (input.toLowerCase().includes("o'connell") || input.toLowerCase().includes('city center') || input.toLowerCase().includes('airport')) {
-        responseText = "I can help you get to O'Connell Street from Dublin Airport! I recommend taking the Aircoach Express Bus. There's a student discount available for you. Would you like to see the journey details?";
-        if (onSuggestAction) {
-          onSuggestAction('airport');
-        }
-      } else if (input.toLowerCase().includes('govinda') || input.toLowerCase().includes('restaurant') || input.toLowerCase().includes('food') || input.toLowerCase().includes('eat')) {
-        responseText = "I've found Govinda's Vegan Restaurant nearby, which matches your dietary preferences. It's just a short 5-minute walk from O'Connell Street. Would you like directions?";
-        if (onSuggestAction) {
-          onSuggestAction('govindas');
-        }
-      } else if (input.toLowerCase().includes('ticket') || input.toLowerCase().includes('buy') || input.toLowerCase().includes('purchase')) {
-        responseText = "I can help you purchase a ticket for the Aircoach Express Bus. Would you like to proceed with buying a ticket to O'Connell Street?";
-        if (onSuggestAction) {
-          onSuggestAction('airport');
-        }
-      } else {
-        responseText = "I'll help you plan that journey. Based on your location at Dublin Airport, I can suggest routes to popular destinations like O'Connell Street in the city center. Where would you like to go?";
-      }
-      
-      const newAssistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
-        sender: 'assistant',
-        text: responseText,
-        timestamp: new Date(),
-      };
-      
-      setMessages(prev => [...prev, newAssistantMessage]);
-    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -106,7 +119,21 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     if (isRecording) {
       setIsRecording(false);
       // Simulate voice transcription completion
-      setInput("How do I get to O'Connell Street from the airport?");
+      
+      // Set different example inputs based on journey state
+      let exampleInput = "How do I get to O'Connell Street from the airport?";
+      
+      if (journeyState === 'ticket_purchased') {
+        exampleInput = "Yes, I've boarded the bus now";
+      } else if (journeyState === 'on_bus') {
+        exampleInput = "Yes, I've arrived at O'Connell Street";
+      } else if (journeyState === 'arrived_oconnell') {
+        exampleInput = "Yes, I'd like directions to Govinda's";
+      } else if (journeyState === 'walking_to_restaurant') {
+        exampleInput = "I've arrived at Govinda's now";
+      }
+      
+      setInput(exampleInput);
       toast.success("Voice input transcribed!");
     } else {
       setIsRecording(true);
@@ -115,7 +142,21 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       setTimeout(() => {
         if (isRecording) {
           setIsRecording(false);
-          setInput("How do I get to O'Connell Street from the airport?");
+          
+          // Set different example inputs based on journey state
+          let exampleInput = "How do I get to O'Connell Street from the airport?";
+          
+          if (journeyState === 'ticket_purchased') {
+            exampleInput = "Yes, I've boarded the bus now";
+          } else if (journeyState === 'on_bus') {
+            exampleInput = "Yes, I've arrived at O'Connell Street";
+          } else if (journeyState === 'arrived_oconnell') {
+            exampleInput = "Yes, I'd like directions to Govinda's";
+          } else if (journeyState === 'walking_to_restaurant') {
+            exampleInput = "I've arrived at Govinda's now";
+          }
+          
+          setInput(exampleInput);
           toast.success("Voice input transcribed!");
         }
       }, 2000);
