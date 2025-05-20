@@ -1,7 +1,3 @@
-<think>
-
-</think>
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Header } from '@/components/Header';
