@@ -25,8 +25,9 @@ interface PaymentOption {
 interface PaymentPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (pointsEarned: number, pointsSpent: number) => void;
   destination: string;
+  availablePoints: number;
 }
 
 export const PaymentPanel: React.FC<PaymentPanelProps> = ({
@@ -34,6 +35,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
   onClose,
   onSuccess,
   destination,
+  availablePoints,
 }) => {
   const [selectedTicket, setSelectedTicket] = useState<string>('student');
   const [selectedPayment, setSelectedPayment] = useState('mastercard');
@@ -64,11 +66,17 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
     
     setLoading(true);
     
+    // Points earned from purchase - 50 for bus ticket
+    const pointsEarned = 50;
+    
+    // Points spent if using rewards
+    const pointsSpent = useRewards ? 50 : 0;
+    
     // Simulate payment processing
     setTimeout(() => {
       setLoading(false);
-      onSuccess();
-      toast.success(`Ticket purchased successfully! ${useRewards ? 'Rewards applied. ' : ''}You earned 5 points!`);
+      onSuccess(pointsEarned, pointsSpent);
+      toast.success(`Ticket purchased successfully! ${useRewards ? 'Rewards applied. ' : ''}You earned ${pointsEarned} points!`);
     }, 1500);
   };
 
@@ -80,6 +88,9 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
     }
     return `€${basePrice.toFixed(2)}`;
   };
+  
+  // Disable rewards checkbox if user doesn't have enough points
+  const canUseRewards = availablePoints >= 50;
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -149,10 +160,16 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
                 id="rewards" 
                 checked={useRewards} 
                 onCheckedChange={(checked) => setUseRewards(!!checked)} 
+                disabled={!canUseRewards}
               />
               <div>
                 <Label htmlFor="rewards" className="font-medium">Use Rewards</Label>
-                <p className="text-xs text-gray-500">You have 50 points (€1.00 discount)</p>
+                <p className="text-xs text-gray-500">
+                  {canUseRewards 
+                    ? `You have ${availablePoints} points (€1.00 discount)` 
+                    : `You need 50 points for a discount (you have ${availablePoints})`
+                  }
+                </p>
               </div>
             </div>
           </div>

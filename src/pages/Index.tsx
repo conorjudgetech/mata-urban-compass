@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Header } from '@/components/Header';
@@ -29,11 +30,13 @@ const Index = () => {
   const [showPaymentPanel, setShowPaymentPanel] = useState(false);
   const [destination, setDestination] = useState('');
   const [journeySteps, setJourneySteps] = useState<JourneyStep[]>([]);
+  const [routeOptions, setRouteOptions] = useState<JourneyStep[][]>([]);
   const [activeJourney, setActiveJourney] = useState(false);
   const [tickets, setTickets] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [journeyState, setJourneyState] = useState<JourneyState>('none');
   const [selectedRouteOption, setSelectedRouteOption] = useState<number | null>(null);
+  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(50); // Initialize with 50 points
 
   // Simulate first-time visit
   useEffect(() => {
@@ -52,112 +55,93 @@ const Index = () => {
     setJourneyState('selecting_route');
     
     // Two route options
-    const routeOptions: JourneyStep[][] = [
-      // Aircoach Express option
-      [
-        {
-          id: 'start',
-          title: 'Start',
-          icon: 'start',
-          status: 'completed',
-          details: {
-            location: 'Dublin Airport',
-            time: '13:30',
-          }
-        },
-        {
-          id: 'ticket',
-          title: 'Buy Ticket',
-          icon: 'ticket',
-          status: 'active',
-          details: {
-            price: '€7.00 (€5.00 Student)',
-            time: 'Next bus: 13:45',
-            instructions: 'Student ID discount automatically applied',
-          }
-        },
-        {
-          id: 'bus',
-          title: 'Aircoach Bus',
-          icon: 'bus',
-          status: 'pending',
-          details: {
-            location: 'Zone 16',
-            time: '13:45 - 14:28',
-          }
-        },
-        {
-          id: 'arrive',
-          title: "O'Connell St",
-          icon: 'finish',
-          status: 'pending',
-          details: {
-            location: 'City Center',
-            time: '14:28',
-          }
+    const busRoute: JourneyStep[] = [
+      {
+        id: 'start',
+        title: 'Start',
+        icon: 'start',
+        status: 'completed',
+        details: {
+          location: 'Dublin Airport',
+          time: '13:30',
         }
-      ],
-      // Taxi option
-      [
-        {
-          id: 'start-taxi',
-          title: 'Start',
-          icon: 'start',
-          status: 'completed',
-          details: {
-            location: 'Dublin Airport',
-            time: '13:30',
-          }
-        },
-        {
-          id: 'taxi',
-          title: 'Taxi',
-          icon: 'bus', // Changed from string to allowed value
-          status: 'active',
-          details: {
-            price: '€30.00',
-            time: 'Available now',
-            instructions: 'More expensive but faster option',
-          }
-        },
-        {
-          id: 'arrive-taxi',
-          title: "O'Connell St",
-          icon: 'finish',
-          status: 'pending',
-          details: {
-            location: 'City Center',
-            time: '14:00',
-          }
+      },
+      {
+        id: 'ticket',
+        title: 'Buy Ticket',
+        icon: 'ticket',
+        status: 'active',
+        details: {
+          price: '€7.00 (€5.00 Student)',
+          time: 'Next bus: 13:45',
+          instructions: 'Student ID discount automatically applied',
         }
-      ]
+      },
+      {
+        id: 'bus',
+        title: 'Aircoach Bus',
+        icon: 'bus',
+        status: 'pending',
+        details: {
+          location: 'Zone 16',
+          time: '13:45 - 14:28',
+        }
+      },
+      {
+        id: 'arrive',
+        title: "O'Connell St",
+        icon: 'finish',
+        status: 'pending',
+        details: {
+          location: 'City Center',
+          time: '14:28',
+        }
+      }
+    ];
+
+    const taxiRoute: JourneyStep[] = [
+      {
+        id: 'start-taxi',
+        title: 'Start',
+        icon: 'start',
+        status: 'completed',
+        details: {
+          location: 'Dublin Airport',
+          time: '13:30',
+        }
+      },
+      {
+        id: 'taxi',
+        title: 'Taxi',
+        icon: 'bus', // Using 'bus' icon for taxi as it's one of the allowed values
+        status: 'active',
+        details: {
+          price: '€30.00',
+          time: 'Available now',
+          instructions: 'More expensive but faster option',
+        }
+      },
+      {
+        id: 'arrive-taxi',
+        title: "O'Connell St",
+        icon: 'finish',
+        status: 'pending',
+        details: {
+          location: 'City Center',
+          time: '14:00',
+        }
+      }
     ];
     
-    // Set initial route options
-    setJourneySteps(routeOptions[0]);
+    // Set route options
+    setRouteOptions([busRoute, taxiRoute]);
+    setSelectedRouteOption(null);
+    
+    // Set initial journey steps to empty - will be populated when route is selected
+    setJourneySteps([]);
     
     // Add contextual suggestions
     setSuggestions([
-      {
-        id: 'route-option-1',
-        type: 'offer',
-        title: 'Option 1: Aircoach Express Bus',
-        description: '€7.00 (€5.00 Student) • 43 minutes • Student discount available • Earn 5 points',
-        action: {
-          label: 'Select Bus',
-          onClick: () => selectRouteOption(0),
-        }
-      },
-      {
-        id: 'route-option-2',
-        type: 'info',
-        title: 'Option 2: Taxi',
-        description: '€30.00 • 25 minutes • No waiting time',
-        action: {
-          label: 'Select Taxi',
-          onClick: () => selectRouteOption(1),
-        }
-      },
       {
         id: 'alert-1',
         type: 'alert',
@@ -171,6 +155,7 @@ const Index = () => {
   const selectRouteOption = (option: number) => {
     setSelectedRouteOption(option);
     setJourneyState('route_selected');
+    setJourneySteps(routeOptions[option]);
     
     // Update suggestions based on selection
     if (option === 0) {
@@ -181,10 +166,6 @@ const Index = () => {
           type: 'offer',
           title: 'Student Discount Available',
           description: 'Your student status qualifies you for a 30% discount on the Aircoach Express.',
-          action: {
-            label: 'Buy Ticket',
-            onClick: handleBuyTicket,
-          },
         }
       ]);
       toast.success('Aircoach Express Bus route selected!');
@@ -196,14 +177,6 @@ const Index = () => {
           type: 'info',
           title: 'Taxi Information',
           description: 'Taxis are available outside Terminal 1. Average wait time: 5 minutes.',
-          action: {
-            label: 'Book Taxi',
-            onClick: () => {
-              toast.info('This would connect to a taxi booking service in a real app');
-              // For demo, we'll continue with the bus flow
-              selectRouteOption(0);
-            },
-          },
         }
       ]);
       toast.success('Taxi route selected!');
@@ -262,13 +235,6 @@ const Index = () => {
         type: 'time',
         title: 'Open Hours',
         description: 'Open until 21:00 today. No reservation needed for lunch service.',
-        action: {
-          label: 'Start Walking',
-          onClick: () => {
-            setJourneyState('walking_to_restaurant');
-            toast.success('Walking directions to Govinda\'s shown on map');
-          },
-        }
       },
       {
         id: 'loyalty',
@@ -288,11 +254,20 @@ const Index = () => {
         (step.id === 'taxi' && step.status === 'active')) {
       handleBuyTicket();
     }
+    
+    // Add handler for "I've Arrived" button for walking to Govinda's
+    if (step.id === 'walk' && step.status === 'active' && 
+        journeyState === 'walking_to_restaurant') {
+      handleArrivalAtGovindas();
+    }
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = (pointsEarned: number, pointsSpent: number) => {
     setShowPaymentPanel(false);
     setJourneyState('ticket_purchased');
+    
+    // Update loyalty points (add earned points, subtract spent points)
+    setLoyaltyPoints(prev => prev + pointsEarned - pointsSpent);
     
     // Update journey steps
     setJourneySteps(prevSteps => prevSteps.map(step => {
@@ -395,7 +370,7 @@ const Index = () => {
         id: 'mastercard-rewards',
         type: 'info',
         title: 'Mastercard Rewards Update',
-        description: 'You\'ve earned 5 points for your bus journey! Use them on your next purchase.',
+        description: 'You\'ve earned points for your bus journey! Use them on your next purchase.',
       }
     ]);
     
@@ -415,6 +390,9 @@ const Index = () => {
       }
       return step;
     }));
+    
+    // Add 10 more points for arriving at Govindas
+    setLoyaltyPoints(prev => prev + 10);
     
     // Update suggestions
     setSuggestions([
@@ -481,7 +459,6 @@ const Index = () => {
         handleArrivalAtGovindas();
       }
     }
-    // Other journey states can be handled as needed
   };
 
   const handleSuggestAction = (action: string) => {
@@ -492,9 +469,14 @@ const Index = () => {
     }
   };
 
+  const startWalkingToRestaurant = () => {
+    setJourneyState('walking_to_restaurant');
+    toast.success('Walking directions to Govinda\'s shown on map');
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      <Header />
+      <Header loyaltyPoints={loyaltyPoints} />
       
       <main className="flex-1 container mx-auto p-4 max-w-6xl">
         {/* Initial onboarding modal */}
@@ -515,6 +497,7 @@ const Index = () => {
           onClose={() => setShowPaymentPanel(false)}
           onSuccess={handlePaymentSuccess}
           destination={destination}
+          availablePoints={loyaltyPoints}
         />
         
         {/* Main layout */}
@@ -545,13 +528,26 @@ const Index = () => {
           {/* Right column - Journey & Suggestions */}
           <div className="space-y-6">
             {/* Journey visualizer */}
-            {activeJourney && journeySteps.length > 0 && (
+            {activeJourney && (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border overflow-hidden p-4">
                 <h2 className="text-sm font-medium mb-3">Your Journey to {destination}</h2>
                 <JourneyVisualizer 
                   steps={journeySteps} 
                   onStepClick={handleStepClick}
+                  routeOptions={journeyState === 'selecting_route' ? routeOptions : undefined}
+                  onRouteSelect={selectRouteOption}
+                  selectedRoute={selectedRouteOption}
                 />
+                
+                {/* Additional action button for walking to restaurant if needed */}
+                {journeyState === 'selecting_restaurant' && (
+                  <Button 
+                    onClick={startWalkingToRestaurant}
+                    className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg"
+                  >
+                    Start Walking
+                  </Button>
+                )}
               </div>
             )}
             
@@ -572,11 +568,8 @@ const Index = () => {
                 <h2 className="text-sm font-medium mb-3">Mastercard Rewards</h2>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Points Earned Today</p>
-                    <p className="text-2xl font-semibold">
-                      {journeyState === 'arrived_govindas' ? '60' : 
-                       journeyState === 'arrived_oconnell' ? '50' : '45'}
-                    </p>
+                    <p className="text-xs text-gray-500 mb-1">Points Balance</p>
+                    <p className="text-2xl font-semibold">{loyaltyPoints}</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-mastercard-red to-mastercard-yellow rounded-full flex items-center justify-center">
                     <span className="text-white font-bold">MC</span>

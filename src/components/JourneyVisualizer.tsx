@@ -9,6 +9,7 @@ import {
   Utensils, 
   ArrowRight,
   ArrowUpRight,
+  ArrowDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -30,11 +31,17 @@ export interface JourneyStep {
 interface JourneyVisualizerProps {
   steps: JourneyStep[];
   onStepClick: (step: JourneyStep) => void;
+  routeOptions?: JourneyStep[][];
+  onRouteSelect?: (routeIndex: number) => void;
+  selectedRoute?: number | null;
 }
 
 export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({ 
   steps,
   onStepClick,
+  routeOptions,
+  onRouteSelect,
+  selectedRoute,
 }) => {
   const [expandedStep, setExpandedStep] = useState<string | null>(
     steps.find(step => step.status === 'active')?.id || null
@@ -68,35 +75,95 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
     onStepClick(step);
   };
 
+  // Show route options if they exist and no route is selected yet
+  if (routeOptions && selectedRoute === null) {
+    return (
+      <div className="w-full mb-4">
+        <div className="space-y-4">
+          {routeOptions.map((routeSteps, index) => (
+            <div 
+              key={`route-${index}`} 
+              className={cn(
+                "p-4 border rounded-xl cursor-pointer transition-all",
+                "hover:border-mastercard-red"
+              )}
+              onClick={() => onRouteSelect && onRouteSelect(index)}
+            >
+              <h3 className="font-medium mb-2">
+                {index === 0 ? 'Option 1: Aircoach Express Bus' : 'Option 2: Taxi'}
+              </h3>
+              <div className="text-sm text-gray-600 mb-3">
+                {index === 0 ? '€7.00 (€5.00 Student) • 43 minutes • Student discount available • Earn 50 points' :
+                 '€30.00 • 25 minutes • No waiting time'}
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                {routeSteps.map((step, stepIndex) => (
+                  <div key={step.id} className="flex items-center">
+                    <div className={cn(
+                      "p-1.5 rounded-full",
+                      "bg-gray-100 text-gray-500"
+                    )}>
+                      {getIcon(step.icon)}
+                    </div>
+                    {stepIndex < routeSteps.length - 1 && (
+                      <div className="px-1">
+                        <ArrowRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              <Button 
+                className="w-full mt-3 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg"
+              >
+                {index === 0 ? 'Select Bus' : 'Select Taxi'}
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full mb-4">
-      <div className="overflow-x-auto pb-4">
-        <div className="flex items-center gap-4 min-w-max px-2">
+      <div className="space-y-0">
+        <div className="journey-steps-vertical">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
+            <div key={step.id} className="flex">
+              <div className="journey-step-indicator">
+                <div className={cn(
+                  "journey-step-icon",
+                  step.status === 'completed' ? "bg-green-100 text-green-600" : 
+                  step.status === 'active' ? "bg-mastercard-red/10 text-mastercard-red" :
+                  "bg-gray-100 text-gray-500"
+                )}>
+                  {step.status === 'completed' ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    getIcon(step.icon)
+                  )}
+                </div>
+                
+                {index < steps.length - 1 && (
+                  <div className={cn(
+                    "journey-line-vertical",
+                    steps[index + 1].status !== 'pending' ? "bg-green-500" : "bg-gray-200"
+                  )}></div>
+                )}
+              </div>
+              
               <div 
                 className={cn(
-                  "journey-step",
+                  "journey-step-content",
                   step.status === 'active' && "active",
                   step.status === 'completed' && "completed"
                 )}
                 onClick={() => handleStepClick(step)}
               >
                 <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "p-1.5 rounded-full",
-                    step.status === 'completed' 
-                      ? "bg-green-100 text-green-600" 
-                      : step.status === 'active'
-                        ? "bg-mastercard-red/10 text-mastercard-red"
-                        : "bg-gray-100 text-gray-500"
-                  )}>
-                    {step.status === 'completed' ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      getIcon(step.icon)
-                    )}
-                  </div>
                   <span className={cn(
                     "font-medium",
                     step.status === 'active' && "text-mastercard-red",
@@ -139,18 +206,14 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                     )}
                     {step.status === 'active' && (
                       <Button className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg">
-                        {step.icon === 'ticket' ? 'Buy Ticket' : step.icon === 'bus' ? 'Book Bus' : 'Details'}
+                        {step.icon === 'ticket' ? 'Buy Ticket' : 
+                         step.icon === 'bus' ? 'Book Bus' : 
+                         step.icon === 'walk' && index === steps.length - 2 ? "I've Arrived" : 'Details'}
                       </Button>
                     )}
                   </div>
                 )}
               </div>
-              
-              {index < steps.length - 1 && (
-                <div className="journey-line flex items-center justify-center">
-                  <ArrowRight className="h-4 w-4 text-gray-400" />
-                </div>
-              )}
             </div>
           ))}
         </div>

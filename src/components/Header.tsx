@@ -13,7 +13,11 @@ import {
 import { TicketWallet } from './TicketWallet';
 import { ProfileModal } from './ProfileModal';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  loyaltyPoints: number;
+}
+
+export const Header: React.FC<HeaderProps> = ({ loyaltyPoints }) => {
   const [showProfile, setShowProfile] = useState(false);
   
   return (
@@ -32,6 +36,12 @@ export const Header: React.FC = () => {
       </div>
       
       <div className="flex items-center gap-4">
+        {/* Loyalty points */}
+        <div className="loyalty-points-badge border-mastercard-red/20">
+          <div className="point-icon"></div>
+          <span className="point-value">{loyaltyPoints}</span>
+        </div>
+
         {/* My Tickets moved to the top navbar */}
         <TicketWallet />
         

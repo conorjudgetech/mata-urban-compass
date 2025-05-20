@@ -31,7 +31,42 @@
   }
 }
 
-/* Journey step styling */
+/* Vertical Journey step styling */
+.journey-steps-vertical {
+  @apply flex flex-col space-y-1;
+}
+
+.journey-step-indicator {
+  @apply flex flex-col items-center mr-4;
+}
+
+.journey-step-icon {
+  @apply p-1.5 rounded-full flex items-center justify-center relative z-10;
+  height: 32px;
+  width: 32px;
+}
+
+.journey-line-vertical {
+  @apply w-0.5 h-full my-1 mx-auto;
+}
+
+.journey-step-content {
+  @apply bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border cursor-pointer transition-all flex-1 mb-4;
+}
+
+.journey-step-content:hover {
+  @apply border-mastercard-red;
+}
+
+.journey-step-content.active {
+  @apply border-mastercard-red;
+}
+
+.journey-step-content.completed {
+  @apply border-green-500;
+}
+
+/* Old horizontal journey steps - kept for backward compatibility */
 .journey-step {
   @apply bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border cursor-pointer transition-all;
   min-width: 150px;
@@ -65,4 +100,18 @@
 /* Modal content */
 .modal-content {
   @apply bg-white dark:bg-gray-900 border-0 rounded-xl shadow-lg;
+}
+
+/* Loyalty points badge styling */
+.loyalty-points-badge {
+  @apply flex items-center px-2 py-1 border rounded-lg;
+  min-width: 70px;
+}
+
+.loyalty-points-badge .point-icon {
+  @apply w-4 h-4 rounded-full bg-gradient-to-r from-mastercard-red to-mastercard-yellow mr-1;
+}
+
+.loyalty-points-badge .point-value {
+  @apply text-sm font-medium;
 }
