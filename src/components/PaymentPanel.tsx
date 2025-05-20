@@ -66,17 +66,16 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
     
     setLoading(true);
     
-    // Points earned from purchase - 50 for bus ticket
-    const pointsEarned = 50;
+    // Points earned from purchase - 10 for bus ticket (changed from 50)
+    const pointsEarned = 10;
     
-    // Points spent if using rewards
-    const pointsSpent = useRewards ? 50 : 0;
+    // Points spent if using rewards - 100 points for €1.00 discount (changed from 50)
+    const pointsSpent = useRewards ? 100 : 0;
     
     // Simulate payment processing
     setTimeout(() => {
       setLoading(false);
       onSuccess(pointsEarned, pointsSpent);
-      toast.success(`Ticket purchased successfully! ${useRewards ? 'Rewards applied. ' : ''}You earned ${pointsEarned} points!`);
     }, 1500);
   };
 
@@ -89,8 +88,8 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
     return `€${basePrice.toFixed(2)}`;
   };
   
-  // Disable rewards checkbox if user doesn't have enough points
-  const canUseRewards = availablePoints >= 50;
+  // Disable rewards checkbox if user doesn't have enough points (100 points needed)
+  const canUseRewards = availablePoints >= 100;
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -166,8 +165,8 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
                 <Label htmlFor="rewards" className="font-medium">Use Rewards</Label>
                 <p className="text-xs text-gray-500">
                   {canUseRewards 
-                    ? `You have ${availablePoints} points (€1.00 discount)` 
-                    : `You need 50 points for a discount (you have ${availablePoints})`
+                    ? `Use ${availablePoints >= 100 ? 100 : availablePoints} of your ${availablePoints} points for €1.00 discount` 
+                    : `You need 100 points for a discount (you have ${availablePoints})`
                   }
                 </p>
               </div>

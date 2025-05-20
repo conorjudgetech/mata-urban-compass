@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button'; // Add this import
+import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { OnboardingModal } from '@/components/OnboardingModal';
@@ -37,7 +36,7 @@ const Index = () => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [journeyState, setJourneyState] = useState<JourneyState>('none');
   const [selectedRouteOption, setSelectedRouteOption] = useState<number | null>(null);
-  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(50); // Initialize with 50 points
+  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(100); // Changed from 50 to 100
 
   // Simulate first-time visit
   useEffect(() => {
@@ -141,13 +140,13 @@ const Index = () => {
     // Set initial journey steps to empty - will be populated when route is selected
     setJourneySteps([]);
     
-    // Add contextual suggestions
+    // Add contextual suggestions with updated football event message
     setSuggestions([
       {
         id: 'alert-1',
         type: 'alert',
         title: 'Football Event Alert',
-        description: "There's a major football celebration near your route that may cause delays. Consider our suggested alternative.",
+        description: "There's a major football celebration near your route that may cause delays. The bus route (Option 1) will be less affected by the disruption than the taxi route.",
       }
     ]);
   };
@@ -169,7 +168,6 @@ const Index = () => {
           description: 'Your student status qualifies you for a 30% discount on the Aircoach Express.',
         }
       ]);
-      toast.success('Aircoach Express Bus route selected!');
     } else {
       // Taxi option selected
       setSuggestions([
@@ -180,7 +178,6 @@ const Index = () => {
           description: 'Taxis are available outside Terminal 1. Average wait time: 5 minutes.',
         }
       ]);
-      toast.success('Taxi route selected!');
     }
   };
 
@@ -241,7 +238,7 @@ const Index = () => {
         id: 'loyalty',
         type: 'offer',
         title: 'Mastercard Loyalty',
-        description: 'Pay with your Mastercard at Govinda\'s to earn 10 additional points!',
+        description: 'Pay with your Mastercard at Govinda\'s to earn 30 additional points!',
       }
     ]);
   };
@@ -260,6 +257,11 @@ const Index = () => {
     if (step.id === 'walk' && step.status === 'active' && 
         journeyState === 'walking_to_restaurant') {
       handleArrivalAtGovindas();
+    }
+
+    // Add handler for viewing ticket in wallet
+    if (step.id === 'bus' && step.status === 'active') {
+      // No action needed as the button text will be changed in JourneyVisualizer
     }
   };
 
@@ -310,9 +312,6 @@ const Index = () => {
         }
       }
     ]);
-    
-    // Show success message
-    toast.success(`Your ticket to ${destination} has been added to your wallet!`);
   };
 
   const updateJourneyAfterBoarding = () => {
@@ -348,34 +347,24 @@ const Index = () => {
         }
       }
     ]);
-    
-    toast.success('You\'ve boarded the Aircoach Express Bus!');
   };
 
   const handleArrivalAtOConnell = () => {
     setJourneyState('arrived_oconnell');
     
-    // Show vegan restaurant suggestion
+    // Show vegan restaurant suggestion with updated button text
     setSuggestions([
       {
         id: 'govindas-suggestion',
         type: 'offer',
         title: 'Vegan Restaurant Nearby',
-        description: 'Govinda\'s Vegan Restaurant is just a 5-minute walk away. It matches your dietary preferences!',
+        description: 'Govinda\'s Vegan Restaurant is just a 5-minute walk away. It matches your dietary preferences! Would you like to go there?',
         action: {
-          label: 'Get Directions',
+          label: 'Start New Journey',
           onClick: initializeGovindasJourney,
         }
-      },
-      {
-        id: 'mastercard-rewards',
-        type: 'info',
-        title: 'Mastercard Rewards Update',
-        description: 'You\'ve earned points for your bus journey! Use them on your next purchase.',
       }
     ]);
-    
-    toast.success('You\'ve arrived at O\'Connell Street!');
   };
 
   const handleArrivalAtGovindas = () => {
@@ -392,26 +381,41 @@ const Index = () => {
       return step;
     }));
     
-    // Add 10 more points for arriving at Govindas
-    setLoyaltyPoints(prev => prev + 10);
-    
     // Update suggestions
     setSuggestions([
       {
         id: 'arrived-govindas',
         type: 'info',
         title: 'Welcome to Govinda\'s!',
-        description: 'You\'ve arrived at Govinda\'s Vegan Restaurant. Enjoy your meal!',
+        description: 'You\'ve arrived at Govinda\'s Vegan Restaurant. Would you like to know about their menu?',
       },
       {
         id: 'mastercard-offer',
         type: 'offer',
-        title: 'Mastercard Special',
+        title: 'Mastercard Payment',
         description: 'Show your Mastercard when paying to receive a 10% discount on your meal!',
+        action: {
+          label: 'I\'ve Paid with Mastercard',
+          onClick: handleMastercardPayment,
+        }
       }
     ]);
+  };
+
+  // New function to handle Mastercard payment at Govinda's
+  const handleMastercardPayment = () => {
+    // Add 30 points for paying at Govinda's with Mastercard
+    setLoyaltyPoints(prev => prev + 30);
     
-    toast.success('You\'ve arrived at Govinda\'s Restaurant!');
+    // Update suggestions
+    setSuggestions([
+      {
+        id: 'payment-complete',
+        type: 'offer',
+        title: 'Payment Complete',
+        description: 'Thank you for using your Mastercard! You\'ve earned 30 loyalty points from this transaction.',
+      }
+    ]);
   };
 
   const handleSendMessage = (message: string) => {
@@ -538,6 +542,7 @@ const Index = () => {
                   routeOptions={journeyState === 'selecting_route' ? routeOptions : undefined}
                   onRouteSelect={selectRouteOption}
                   selectedRoute={selectedRouteOption}
+                  journeyState={journeyState}
                 />
                 
                 {/* Additional action button for walking to restaurant if needed */}

@@ -59,7 +59,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     switch(journeyState) {
       case 'selecting_route':
-        addSystemMessage("I can help you get to O'Connell Street from Dublin Airport! I've found two options for you: Aircoach Express Bus (€7.00, with student discount €5.00) or Taxi (€30.00). Which would you prefer?");
+        addSystemMessage("I can help you get to O'Connell Street from Dublin Airport! I've found two options for you: Aircoach Express Bus (€7.00, with student discount €5.00) or Taxi (€30.00). There's a football event that may cause delays, but the bus route will be less affected. Which would you prefer?");
         break;
       case 'route_selected':
         addSystemMessage("Great choice! Would you like to purchase a ticket for this journey now?");
@@ -74,7 +74,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         addSystemMessage("You're making good progress on your journey! Let me know when you've arrived at O'Connell Street.");
         break;
       case 'arrived_oconnell':
-        addSystemMessage("Welcome to O'Connell Street! I've noticed there's a Govinda's Vegan Restaurant nearby that matches your dietary preferences. Would you like directions?");
+        addSystemMessage("Welcome to O'Connell Street! I've noticed there's a Govinda's Vegan Restaurant nearby that matches your dietary preferences. Would you like to go there?");
         break;
       case 'selecting_restaurant':
         addSystemMessage("Govinda's is a popular vegan restaurant just a 5-minute walk from here. Would you like me to guide you there?");
@@ -83,7 +83,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         addSystemMessage("I've mapped out the shortest route to Govinda's Restaurant. It's just a short walk down Abbey Street. Let me know when you've arrived!");
         break;
       case 'arrived_govindas':
-        addSystemMessage("You've arrived at Govinda's Restaurant! Enjoy your meal. Remember to pay with your Mastercard to earn additional rewards points. Is there anything else you need?");
+        addSystemMessage("You've arrived at Govinda's Restaurant! Would you like to know about their menu options? Remember to pay with your Mastercard to earn 30 additional rewards points.");
         break;
     }
   }, [journeyState]);

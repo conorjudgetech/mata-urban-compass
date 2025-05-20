@@ -34,6 +34,7 @@ interface JourneyVisualizerProps {
   routeOptions?: JourneyStep[][];
   onRouteSelect?: (routeIndex: number) => void;
   selectedRoute?: number | null;
+  journeyState?: string;
 }
 
 export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({ 
@@ -42,7 +43,9 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
   routeOptions,
   onRouteSelect,
   selectedRoute,
+  journeyState,
 }) => {
+  // Always expand the active step automatically
   const [expandedStep, setExpandedStep] = useState<string | null>(
     steps.find(step => step.status === 'active')?.id || null
   );
@@ -93,8 +96,9 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                 {index === 0 ? 'Option 1: Aircoach Express Bus' : 'Option 2: Taxi'}
               </h3>
               <div className="text-sm text-gray-600 mb-3">
-                {index === 0 ? '€7.00 (€5.00 Student) • 43 minutes • Student discount available • Earn 50 points' :
-                 '€30.00 • 25 minutes • No waiting time'}
+                {index === 0 ? 
+                 '€7.00 (€5.00 Student) • 43 minutes • Student discount available • Earn 10 points • Less affected by football event' :
+                 '€30.00 • 25 minutes • No waiting time • May be delayed by football event'}
               </div>
               
               <div className="flex items-center space-x-2">
@@ -173,7 +177,7 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                   </span>
                 </div>
                 
-                {expandedStep === step.id && step.details && (
+                {(expandedStep === step.id || step.status === 'active') && step.details && (
                   <div className="mt-3 pt-3 border-t text-sm">
                     {step.details.time && (
                       <div className="flex justify-between mb-1">
@@ -207,8 +211,9 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                     {step.status === 'active' && (
                       <Button className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg">
                         {step.icon === 'ticket' ? 'Buy Ticket' : 
-                         step.icon === 'bus' ? 'Book Bus' : 
-                         step.icon === 'walk' && index === steps.length - 2 ? "I've Arrived" : 'Details'}
+                         step.icon === 'bus' && journeyState === 'ticket_purchased' ? 'View Ticket in Wallet' :
+                         step.icon === 'walk' && journeyState === 'walking_to_restaurant' ? "I've Arrived" : 
+                         'Details'}
                       </Button>
                     )}
                   </div>
