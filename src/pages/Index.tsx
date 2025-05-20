@@ -56,7 +56,7 @@ const Index = () => {
     setJourneyState('selecting_route');
     
     // Two route options
-    const routeOptions = [
+    const routeOptions: JourneyStep[][] = [
       // Aircoach Express option
       [
         {
@@ -116,7 +116,7 @@ const Index = () => {
         {
           id: 'taxi',
           title: 'Taxi',
-          icon: 'bus',
+          icon: 'bus', // Changed from string to allowed value
           status: 'active',
           details: {
             price: '€30.00',

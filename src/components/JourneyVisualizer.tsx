@@ -56,6 +56,8 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
         return <MapPin className="h-5 w-5" />;
       case 'walk':
         return <ArrowUpRight className="h-5 w-5" />;
+      case 'switch':
+        return <ArrowRight className="h-5 w-5" />;
       default:
         return <MapPin className="h-5 w-5" />;
     }
