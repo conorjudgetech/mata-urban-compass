@@ -16,6 +16,8 @@ export const MapComponent: React.FC<MapComponentProps> = ({
   journeyState = 'none',
   destination = ''
 }) => {
+  const [center, setCenter] = useState({ lat: 53.427464, lng: -6.243327 }); // Default center -> Dublin Airport Terminal 1
+  const [zoom, setZoom] = useState(13);
   const [isCollapsed, setIsCollapsed] = useState(!isExpanded);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
@@ -42,7 +44,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
   };
 
   useEffect(() => {
-    if (journeyState === 'selecting_restaurant' || journeyState === 'walking_to_restaurant') {
+    if (journeyState === 'selecting_restaurant') {
       const origin = { lat: 53.351155, lng: -6.260818 }; // O'Connell Street Upper -> 53.3511813,-6.2635439  53.351155, -6.260818
       const destination = { lat: 53.348247, lng: -6.260775 }; // Govinda's -> 53.3484103,-6.2634032
 
@@ -84,11 +86,55 @@ export const MapComponent: React.FC<MapComponentProps> = ({
         }
       );
     }
-    else if (journeyState === 'boarding_bus' || journeyState === 'on_bus' || journeyState === 'arrived_oconnell') {
+    else if (journeyState === 'on_bus') {
       const origin = { lat: 53.428083, lng: -6.244144 }; // Bus Stop
       const destination = { lat: 53.351155, lng: -6.260818 }; // O'Connell Street Upper
 
       const directionsService = new google.maps.DirectionsService();
+
+      directionsService.route(
+        {
+          origin,
+          destination,
+          travelMode: google.maps.TravelMode.TRANSIT,
+          transitOptions: {
+            modes: [google.maps.TransitMode.BUS], // Optional: restrict to bus
+          },
+        },
+        (result, status) => {
+          if (status === google.maps.DirectionsStatus.OK && result) {
+            // Filter legs to include only Aircoach
+            const aircoachRoute = result.routes.find((route) =>
+              route.legs.some((leg) =>
+                leg.steps.some((step) =>
+                  step.travel_mode === 'TRANSIT' &&
+                  step.transit?.line?.name?.toLowerCase().includes('aircoach')
+                )
+              )
+            );
+          
+            if (aircoachRoute) {
+              setDirections({
+                ...result,
+                routes: [aircoachRoute],
+              });
+            } else {
+              console.warn('No Aircoach route found, showing default');
+              setDirections(result); // fallback to first route
+            }
+          } else {
+            console.error(`Error fetching directions: ${status}`);
+          }
+        }
+      );
+    }
+    else if (journeyState === 'route_selected') {
+      const origin = { lat: 53.427464, lng: -6.243327 }; // Dublin Airport Terminal 1
+      const destination = { lat: 53.351155, lng: -6.260818 }; // O'Connell Street Upper
+
+      const directionsService = new google.maps.DirectionsService();
+
+      
 
       directionsService.route(
         {
@@ -105,7 +151,21 @@ export const MapComponent: React.FC<MapComponentProps> = ({
         }
       );
     }
+    else if (journeyState === 'arrived_oconnell') {
+      setDirections(null);
+      setCenter({ lat: 53.351155, lng: -6.260818 }); // O'Connell Street Upper
+      setZoom(17);
+      return;
+    }
+    else if (journeyState === 'arrived_govindas') {
+      setDirections(null);
+      setCenter({ lat: 53.348247, lng: -6.260775 }); // Govindas  53.3483326,-6.2609903
+      setZoom(18);
+      return;
+    }
   }, [journeyState]);
+
+  
 
   return (
     <div className={`relative bg-gray-100 overflow-hidden transition-all duration-300 rounded-lg border ${isCollapsed ? 'h-12' : 'h-64 md:h-96'}`}>
@@ -126,25 +186,25 @@ export const MapComponent: React.FC<MapComponentProps> = ({
         <div className="w-full h-full pt-12">
           <div className="w-full h-full bg-gray-200 flex items-center justify-center relative">
             {/* Map placeholder */}
-            <LoadScript googleMapsApiKey="API_KEY">
+            <LoadScript googleMapsApiKey="AIzaSyBmx1xY9dtDQ5W-K_OK0ChRjJsW618NgQY">
               <GoogleMap
                 mapContainerStyle={{ width: '100%', height: '100%' }}
-                center={{ lat: 53.427464, lng: -6.243327 }}
-                zoom={13}
+                center={center}
+                zoom={zoom}
               >
                 {/* Static Markers */}
-                {(journeyState === 'selecting_route' || journeyState === 'route_selected' || journeyState === 'ticket_purchased' || journeyState === 'boarding_bus' || journeyState === 'on_bus' || journeyState === 'arrived_oconnell') && (
+                {(journeyState === 'selecting_route' || journeyState === 'route_selected' || journeyState === 'ticket_purchased' || journeyState === 'boarding_bus') && (
                   <Marker position={{ lat: 53.427464, lng: -6.243327 }} label="Airport" />
                 )}
-                {(journeyState === 'ticket_purchased') && (
+                {(journeyState === 'ticket_purchased' || journeyState === 'on_bus') && (
                   <Marker position={{ lat: 53.428083, lng: -6.244144 }} label="Bus Stop" />
                 )}
-                {(journeyState === 'selecting_route' || journeyState === 'route_selected' || journeyState === 'on_bus' || journeyState === 'arrived_oconnell'
-                  || journeyState === 'selecting_restaurant' || journeyState === 'walking_to_restaurant' || journeyState === 'arrived_govindas') && (
+                {(journeyState === 'selecting_route' || journeyState === 'route_selected' || journeyState === 'on_bus'
+                  || journeyState === 'selecting_restaurant' || journeyState === 'walking_to_restaurant') && (
                   <Marker position={{ lat: 53.351155, lng: -6.260818 }} label="O'Connell Street Upper" />
                 )}
-                {(journeyState === 'selecting_restaurant' || journeyState === 'walking_to_restaurant' || journeyState === 'arrived_govindas') && (
-                  <Marker position={{ lat: 53.3439, lng: -6.2641 }} label="Govinda's" />
+                {(journeyState === 'selecting_restaurant' || journeyState === 'walking_to_restaurant') && (
+                  <Marker position={{ lat: 53.348247, lng: -6.260775 }} label="Govinda's" />
                 )}
 
                 {/* Directions Renderer */}
