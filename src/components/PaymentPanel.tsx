@@ -133,18 +133,11 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
             <RadioGroup value={selectedPayment} onValueChange={setSelectedPayment}>
               <div className="payment-method selected rounded-lg hover:border-mastercard-red transition-colors">
                 <RadioGroupItem value="mastercard" id="payment-mastercard" />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  className="h-5 w-5 ml-2"
-                >
-                  <circle cx="18" cy="24" r="10" fill="#EB001B" />
-                  <circle cx="30" cy="24" r="10" fill="#F79E1B" />
-                  <path
-                    d="M23 24c0-4.4 2.4-8.3 6-10.3 -1.3-0.5-2.7-0.7-4-0.7 -5.5 0-10 4.5-10 10s4.5 10 10 10c1.4 0 2.7-0.2 4-0.7 -3.6-2-6-5.9-6-10.3z"
-                    fill="#FF5F00"
-                  />
-                </svg>
+                <svg id="uuid-2cbfa6bc-55b4-4c4e-a1fd-571731bdd3f1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.44805 25" style={{width: '26px', marginLeft: '6px'}}>
+    <rect x="14.75524" y="2.6725" width="10.9375" height="19.655" style={{fill: "#ff5f00", strokeWidth: "0"}}/>
+    <path d="M15.44976,12.5c0-3.98743,1.86698-7.53872,4.77427-9.8275-2.12622-1.67382-4.80899-2.6725-7.72493-2.6725C5.59604,0,0,5.59642,0,12.5s5.59604,12.5,12.4991,12.5c2.91594,0,5.59872-.99868,7.72493-2.6725-2.90729-2.28889-4.77427-5.84007-4.77427-9.8275Z" style={{fill: '#eb001b', strokeWidth: '0'}}/>
+    <path d="M40.44805,12.5c0,6.90347-5.59604,12.5-12.4991,12.5-2.91594,0-5.59872-.99868-7.72493-2.6725,2.90736-2.28889,4.77424-5.84007,4.77424-9.8275s-1.86687-7.53872-4.77424-9.8275c2.12622-1.67382,4.80899-2.6725,7.72493-2.6725,6.90306,0,12.4991,5.59642,12.4991,12.5Z" style={{fill : '#f79e1b', strokeWidth : '0'}}/>
+</svg>
                 <Label htmlFor="payment-mastercard" className="ml-2">Mastercard •••• 1234</Label>
               </div>
               <div className="payment-method mt-2 rounded-lg">
