@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Check, 
   MapPin, 
@@ -50,6 +50,14 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
     steps.find(step => step.status === 'active')?.id || null
   );
   
+  // Set automatically expanded step when active step changes
+  useEffect(() => {
+    const activeStep = steps.find(step => step.status === 'active');
+    if (activeStep) {
+      setExpandedStep(activeStep.id);
+    }
+  }, [steps]);
+  
   const getIcon = (iconType: JourneyStep['icon']) => {
     switch (iconType) {
       case 'start':
@@ -93,12 +101,12 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
               onClick={() => onRouteSelect && onRouteSelect(index)}
             >
               <h3 className="font-medium mb-2">
-                {index === 0 ? 'Option 1: Aircoach Express Bus' : 'Option 2: Taxi'}
+                {index === 0 ? 'Option 1: Aircoach Express Bus' : 'Option 2: Dublin Bus 16'}
               </h3>
               <div className="text-sm text-gray-600 mb-3">
                 {index === 0 ? 
                  '€7.00 (€5.00 Student) • 43 minutes • Student discount available • Earn 10 points • Less affected by football event' :
-                 '€30.00 • 25 minutes • No waiting time • May be delayed by football event'}
+                 '€3.30 • 60 minutes • Exact change only • Need Leap Card for student discount • More disrupted by football event • No loyalty points'}
               </div>
               
               <div className="flex items-center space-x-2">
@@ -120,9 +128,9 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
               </div>
               
               <Button 
-                className="w-full mt-3 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg"
+                className="w-full mt-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg"
               >
-                {index === 0 ? 'Select Bus' : 'Select Taxi'}
+                {index === 0 ? 'Select Bus' : 'Select Bus'}
               </Button>
             </div>
           ))}
@@ -209,10 +217,13 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                       </div>
                     )}
                     {step.status === 'active' && (
-                      <Button className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg">
+                      <Button 
+                        className="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg"
+                      >
                         {step.icon === 'ticket' ? 'Buy Ticket' : 
                          step.icon === 'bus' && journeyState === 'ticket_purchased' ? 'View Ticket in Wallet' :
-                         step.icon === 'walk' && journeyState === 'walking_to_restaurant' ? "I've Arrived" : 
+                         journeyState === 'selecting_restaurant' ? 'Select Route' :
+                         journeyState === 'walking_to_restaurant' ? "Start Walking" : 
                          'Details'}
                       </Button>
                     )}

@@ -66,10 +66,10 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
     
     setLoading(true);
     
-    // Points earned from purchase - 10 for bus ticket (changed from 50)
+    // Points earned from purchase - 10 for bus ticket
     const pointsEarned = 10;
     
-    // Points spent if using rewards - 100 points for €1.00 discount (changed from 50)
+    // Points spent if using rewards - 100 points for €1.00 discount
     const pointsSpent = useRewards ? 100 : 0;
     
     // Simulate payment processing
@@ -165,7 +165,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
                 <Label htmlFor="rewards" className="font-medium">Use Rewards</Label>
                 <p className="text-xs text-gray-500">
                   {canUseRewards 
-                    ? `Use ${availablePoints >= 100 ? 100 : availablePoints} of your ${availablePoints} points for €1.00 discount` 
+                    ? `Use 100 of your ${availablePoints} points for €1.00 discount` 
                     : `You need 100 points for a discount (you have ${availablePoints})`
                   }
                 </p>
@@ -195,7 +195,7 @@ export const PaymentPanel: React.FC<PaymentPanelProps> = ({
           <Button
             onClick={handlePurchase}
             disabled={!selectedTicket || loading}
-            className="w-full bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg"
+            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg"
           >
             {loading ? 'Processing...' : `Pay Now ${getFinalPrice()}`}
           </Button>

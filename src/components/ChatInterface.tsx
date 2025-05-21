@@ -31,13 +31,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     {
       id: '1',
       sender: 'assistant',
-      text: 'Hello! I\'m your Mastercard Travel Assistant. How can I help you today?',
+      text: 'Hello Conor! Welcome to Dublin! I see you\'ve just landed from Barcelona. How can I help you today?',
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -47,22 +48,28 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   // Add a message based on journey state changes
   useEffect(() => {
     const addSystemMessage = (text: string) => {
-      const newMessage: Message = {
-        id: `assistant-${Date.now()}`,
-        sender: 'assistant',
-        text,
-        timestamp: new Date(),
-      };
+      setIsTyping(true);
       
-      setMessages(prev => [...prev, newMessage]);
+      // Simulate typing delay
+      setTimeout(() => {
+        const newMessage: Message = {
+          id: `assistant-${Date.now()}`,
+          sender: 'assistant',
+          text,
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => [...prev, newMessage]);
+        setIsTyping(false);
+      }, 1000);
     };
     
     switch(journeyState) {
       case 'selecting_route':
-        addSystemMessage("I can help you get to O'Connell Street from Dublin Airport! I've found two options for you: Aircoach Express Bus (€7.00, with student discount €5.00) or Taxi (€30.00). There's a football event that may cause delays, but the bus route will be less affected. Which would you prefer?");
+        addSystemMessage("I can help you get to O'Connell Street from Dublin Airport! I've found two options for you: Aircoach Express Bus (€7.00, with student discount €5.00) or Dublin Bus 16 (€3.30, exact change only). The bus route will be less affected by the football event happening today. Which would you prefer?");
         break;
       case 'route_selected':
-        addSystemMessage("Great choice! Would you like to purchase a ticket for this journey now?");
+        addSystemMessage("Great choice! The Aircoach Express is more reliable today due to the football event, plus you'll earn Mastercard loyalty points. Would you like to purchase a ticket for this journey now?");
         break;
       case 'ticket_purchased':
         addSystemMessage("Your ticket has been purchased and added to your wallet! Have you boarded the bus yet?");
@@ -77,13 +84,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         addSystemMessage("Welcome to O'Connell Street! I've noticed there's a Govinda's Vegan Restaurant nearby that matches your dietary preferences. Would you like to go there?");
         break;
       case 'selecting_restaurant':
-        addSystemMessage("Govinda's is a popular vegan restaurant just a 5-minute walk from here. Would you like me to guide you there?");
+        addSystemMessage("Govinda's is a popular vegan restaurant just a 5-minute walk from here. Would you like me to show you the route?");
         break;
       case 'walking_to_restaurant':
         addSystemMessage("I've mapped out the shortest route to Govinda's Restaurant. It's just a short walk down Abbey Street. Let me know when you've arrived!");
         break;
       case 'arrived_govindas':
-        addSystemMessage("You've arrived at Govinda's Restaurant! Would you like to know about their menu options? Remember to pay with your Mastercard to earn 30 additional rewards points.");
+        addSystemMessage("You've arrived at Govinda's Restaurant! They have great vegan options like the daily thali plate and bean burgers. Remember to pay with your Mastercard to earn 30 additional rewards points.");
         break;
     }
   }, [journeyState]);
@@ -107,6 +114,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     setInput('');
     setIsTranslating(false);
+    
+    // Simulate typing indicator for response
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -197,6 +210,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             message={message}
           />
         ))}
+        {isTyping && (
+          <div className="flex items-center gap-2 mb-4">
+            <div className="bg-gray-100 p-3 rounded-lg">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-75"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-150"></div>
+              </div>
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
       
@@ -236,9 +260,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             />
             <Button 
               onClick={handleSend} 
-              className="bg-mastercard-red hover:bg-mastercard-red/90 rounded-full"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full"
             >
-              <Send className="h-5 w-5" />
+              <Send className="h-5 w-5 text-gray-600" />
             </Button>
           </div>
         </div>

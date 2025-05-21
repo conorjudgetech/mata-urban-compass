@@ -20,35 +20,29 @@ interface TicketData {
   validUntil: string;
   qrCode: string;
   isActive: boolean;
+  from?: string;
 }
 
 export const TicketWallet: React.FC = () => {
-  // Sample tickets - one active, two inactive
+  // Updated tickets - two expired tickets from Barcelona
   const tickets: TicketData[] = [
     {
       id: '1',
-      type: 'Aircoach Express Bus',
-      destination: "O'Connell Street",
-      validFrom: '19 May, 13:45',
-      validUntil: '19 May, 23:59',
-      qrCode: 'qr-code-placeholder',
-      isActive: true
-    },
-    {
-      id: '2',
-      type: 'Train',
-      destination: 'Barcelona to Madrid',
-      validFrom: '01 May, 10:00',
-      validUntil: '01 May, 23:59',
+      type: 'Aerobus',
+      from: 'Plaza de Cataluña',
+      destination: 'Barcelona T1 Airport',
+      validFrom: '18 May, 08:30',
+      validUntil: '18 May, 23:59',
       qrCode: 'qr-code-placeholder',
       isActive: false
     },
     {
-      id: '3',
-      type: 'Luas Tram',
-      destination: 'Dublin City',
-      validFrom: '02 May, 09:30',
-      validUntil: '02 May, 23:59',
+      id: '2',
+      type: 'Ryanair Flight',
+      from: 'Barcelona T1',
+      destination: 'Dublin T1',
+      validFrom: '18 May, 13:25',
+      validUntil: '18 May, 15:45',
       qrCode: 'qr-code-placeholder',
       isActive: false
     }
@@ -95,7 +89,7 @@ export const TicketWallet: React.FC = () => {
                     </div>
                     <div className="text-sm text-gray-500 mb-4">
                       <div className="flex items-center">
-                        <span>Dublin Airport</span>
+                        <span>{ticket.from || 'Dublin Airport'}</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mx-1">
                           <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>

@@ -10,6 +10,7 @@ interface Message {
   timestamp: Date;
   hasWarning?: boolean;
   source?: string;
+  translated?: boolean;
 }
 
 interface MessageBubbleProps {
@@ -23,23 +24,21 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, className
   return (
     <div
       className={cn(
-        'chat-message',
-        isAssistant ? 'assistant' : 'user',
+        'chat-message mb-4',
         className
       )}
     >
-      <div className="flex items-start gap-2">
-        {isAssistant && (
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-mastercard-red to-mastercard-yellow">
-            <span className="text-xs font-bold text-white">MA</span>
-          </div>
-        )}
-        <div className="flex-1">
+      <div className="flex items-start gap-3 max-w-full">
+        {/* Removed assistant logo */}
+        <div className={cn(
+          "flex-1 p-3 rounded-lg",
+          isAssistant ? "bg-white border border-gray-100" : "bg-gray-50"
+        )}>
           <div className="flex flex-col">
             <div className="text-sm">
               {message.text}
             </div>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2 mt-1.5">
               {message.hasWarning && (
                 <div className="flex items-center gap-1 text-amber-500 text-xs">
                   <AlertTriangle size={12} />
@@ -59,7 +58,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, className
           </div>
         </div>
         {!isAssistant && (
-          <div className="h-8 w-8 shrink-0 rounded-full bg-gray-300 flex items-center justify-center">
+          <div className="h-8 w-8 shrink-0 rounded-full bg-gray-300 flex items-center justify-center mt-1">
             <span className="text-xs font-bold text-white">ME</span>
           </div>
         )}

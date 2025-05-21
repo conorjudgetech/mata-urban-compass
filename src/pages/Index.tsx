@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { MapComponent } from '@/components/MapComponent';
 import { PaymentPanel } from '@/components/PaymentPanel';
 import { ContextualSuggestions } from '@/components/ContextualSuggestions';
 import { PhotoTranslateModal } from '@/components/PhotoTranslateModal';
+import { TicketWallet } from '@/components/TicketWallet';
 
 // Journey state types
 type JourneyState = 
@@ -25,9 +27,10 @@ type JourneyState =
   | 'arrived_govindas';
 
 const Index = () => {
-  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false); // Changed to false to prevent login flash
   const [showPhotoTranslate, setShowPhotoTranslate] = useState(false);
   const [showPaymentPanel, setShowPaymentPanel] = useState(false);
+  const [showTicketWallet, setShowTicketWallet] = useState(false);
   const [destination, setDestination] = useState('');
   const [journeySteps, setJourneySteps] = useState<JourneyStep[]>([]);
   const [routeOptions, setRouteOptions] = useState<JourneyStep[][]>([]);
@@ -36,7 +39,8 @@ const Index = () => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [journeyState, setJourneyState] = useState<JourneyState>('none');
   const [selectedRouteOption, setSelectedRouteOption] = useState<number | null>(null);
-  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(100); // Changed from 50 to 100
+  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(100); // Updated to start with 100 points
+  const [todaysRewards, setTodaysRewards] = useState(0); // Added today's rewards counter
 
   // Simulate first-time visit
   useEffect(() => {
@@ -54,7 +58,7 @@ const Index = () => {
     setActiveJourney(true);
     setJourneyState('selecting_route');
     
-    // Two route options
+    // Two route options - updated option 2 to Dublin Bus 16
     const busRoute: JourneyStep[] = [
       {
         id: 'start',
@@ -99,9 +103,9 @@ const Index = () => {
       }
     ];
 
-    const taxiRoute: JourneyStep[] = [
+    const dublinBusRoute: JourneyStep[] = [
       {
-        id: 'start-taxi',
+        id: 'start-bus',
         title: 'Start',
         icon: 'start',
         status: 'completed',
@@ -111,30 +115,40 @@ const Index = () => {
         }
       },
       {
-        id: 'taxi',
-        title: 'Taxi',
-        icon: 'bus', // Using 'bus' icon for taxi as it's one of the allowed values
+        id: 'ticket-bus',
+        title: 'Buy Ticket',
+        icon: 'ticket',
         status: 'active',
         details: {
-          price: '€30.00',
-          time: 'Available now',
-          instructions: 'More expensive but faster option',
+          price: '€3.30',
+          time: 'Next bus: 13:50',
+          instructions: 'Exact change only or Leap Card required',
         }
       },
       {
-        id: 'arrive-taxi',
+        id: 'bus-16',
+        title: 'Dublin Bus 16',
+        icon: 'bus',
+        status: 'pending',
+        details: {
+          location: 'Stop 7041',
+          time: '13:50 - 14:50',
+        }
+      },
+      {
+        id: 'arrive-bus',
         title: "O'Connell St",
         icon: 'finish',
         status: 'pending',
         details: {
           location: 'City Center',
-          time: '14:00',
+          time: '14:50',
         }
       }
     ];
     
     // Set route options
-    setRouteOptions([busRoute, taxiRoute]);
+    setRouteOptions([busRoute, dublinBusRoute]);
     setSelectedRouteOption(null);
     
     // Set initial journey steps to empty - will be populated when route is selected
@@ -146,9 +160,17 @@ const Index = () => {
         id: 'alert-1',
         type: 'alert',
         title: 'Football Event Alert',
-        description: "There's a major football celebration near your route that may cause delays. The bus route (Option 1) will be less affected by the disruption than the taxi route.",
+        description: "There's a major football celebration near your route that may cause delays. The Aircoach Express Bus (Option 1) will be less affected by the disruption than the Dublin Bus 16 (Option 2).",
       }
     ]);
+    
+    // Add user response to chat
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: "How do I get to O'Connell Street from the airport?",
+      timestamp: new Date()
+    };
   };
 
   // Select a route option
@@ -156,6 +178,14 @@ const Index = () => {
     setSelectedRouteOption(option);
     setJourneyState('route_selected');
     setJourneySteps(routeOptions[option]);
+    
+    // Add user response to chat that they selected this option
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: option === 0 ? "I'll take the Aircoach Express Bus option." : "I'll take the Dublin Bus 16 option.",
+      timestamp: new Date()
+    };
     
     // Update suggestions based on selection
     if (option === 0) {
@@ -169,13 +199,13 @@ const Index = () => {
         }
       ]);
     } else {
-      // Taxi option selected
+      // Dublin Bus option selected
       setSuggestions([
         {
-          id: 'taxi-info',
+          id: 'bus-info',
           type: 'info',
-          title: 'Taxi Information',
-          description: 'Taxis are available outside Terminal 1. Average wait time: 5 minutes.',
+          title: 'Dublin Bus Information',
+          description: 'Dublin Bus 16 requires exact change or a Leap Card. Student discounts need a Student Leap Card.',
         }
       ]);
     }
@@ -220,25 +250,21 @@ const Index = () => {
       }
     ]);
 
-    // Add contextual suggestions
+    // Add user response to chat that they want to go to Govinda's
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: "Yes, I'd like to go to Govinda's Restaurant.",
+      timestamp: new Date()
+    };
+
+    // Update suggestions
     setSuggestions([
       {
         id: 'info-1',
         type: 'info',
         title: 'Restaurant Info',
         description: "Govinda's is a popular vegan restaurant with hearty meals. Perfect match for your dietary preferences!",
-      },
-      {
-        id: 'time-1',
-        type: 'time',
-        title: 'Open Hours',
-        description: 'Open until 21:00 today. No reservation needed for lunch service.',
-      },
-      {
-        id: 'loyalty',
-        type: 'offer',
-        title: 'Mastercard Loyalty',
-        description: 'Pay with your Mastercard at Govinda\'s to earn 30 additional points!',
       }
     ]);
   };
@@ -247,21 +273,20 @@ const Index = () => {
     setShowPaymentPanel(true);
   };
 
+  const handleViewTicketInWallet = () => {
+    setShowTicketWallet(true);
+  };
+
   const handleStepClick = (step: JourneyStep) => {
     if ((step.id === 'ticket' && step.status === 'active') || 
-        (step.id === 'taxi' && step.status === 'active')) {
+        (step.id === 'ticket-bus' && step.status === 'active')) {
       handleBuyTicket();
     }
     
-    // Add handler for "I've Arrived" button for walking to Govinda's
-    if (step.id === 'walk' && step.status === 'active' && 
-        journeyState === 'walking_to_restaurant') {
-      handleArrivalAtGovindas();
-    }
-
-    // Add handler for viewing ticket in wallet
-    if (step.id === 'bus' && step.status === 'active') {
-      // No action needed as the button text will be changed in JourneyVisualizer
+    // Add handler for "View Ticket in Wallet" button
+    if (step.id === 'bus' && step.status === 'active' && 
+        (journeyState === 'ticket_purchased' || journeyState === 'boarding_bus' || journeyState === 'on_bus')) {
+      handleViewTicketInWallet();
     }
   };
 
@@ -271,6 +296,17 @@ const Index = () => {
     
     // Update loyalty points (add earned points, subtract spent points)
     setLoyaltyPoints(prev => prev + pointsEarned - pointsSpent);
+    
+    // Update today's rewards
+    setTodaysRewards(prev => prev + pointsEarned);
+    
+    // Add user response to chat about purchasing ticket
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: "I've purchased my ticket for the Aircoach Express Bus.",
+      timestamp: new Date()
+    };
     
     // Update journey steps
     setJourneySteps(prevSteps => prevSteps.map(step => {
@@ -308,6 +344,14 @@ const Index = () => {
           onClick: () => {
             setJourneyState('boarding_bus');
             updateJourneyAfterBoarding();
+            
+            // Add user response to chat that they boarded the bus
+            const userMsg = {
+              id: `user-${Date.now()}`,
+              sender: 'user',
+              text: "I've boarded the bus now.",
+              timestamp: new Date()
+            };
           },
         }
       }
@@ -343,7 +387,17 @@ const Index = () => {
         description: 'Your bus is making good progress through traffic.',
         action: {
           label: 'I\'ve Arrived at O\'Connell Street',
-          onClick: handleArrivalAtOConnell,
+          onClick: () => {
+            handleArrivalAtOConnell();
+            
+            // Add user response to chat that they arrived
+            const userMsg = {
+              id: `user-${Date.now()}`,
+              sender: 'user',
+              text: "I've arrived at O'Connell Street now.",
+              timestamp: new Date()
+            };
+          },
         }
       }
     ]);
@@ -367,8 +421,48 @@ const Index = () => {
     ]);
   };
 
+  const startWalkingToRestaurant = () => {
+    setJourneyState('walking_to_restaurant');
+    
+    // Add user response to chat that they started walking
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: "I'm starting my walk to Govinda's Restaurant.",
+      timestamp: new Date()
+    };
+    
+    // Update suggestions with an "I've arrived" button
+    setSuggestions([
+      {
+        id: 'walking',
+        type: 'info',
+        title: 'Walking to Govinda\'s',
+        description: 'Follow the route on the map. It\'s about a 5 minute walk.',
+      },
+      {
+        id: 'arrival-button',
+        type: 'time',
+        title: 'Arrival Confirmation',
+        description: 'Let me know when you reach the restaurant.',
+        action: {
+          label: 'I\'ve Arrived at Govinda\'s',
+          onClick: handleArrivalAtGovindas,
+        }
+      }
+    ]);
+  };
+
   const handleArrivalAtGovindas = () => {
     setJourneyState('arrived_govindas');
+    
+    // Add user response to chat that they arrived
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: "I've arrived at Govinda's Restaurant.",
+      timestamp: new Date()
+    };
     
     // Update journey steps
     setJourneySteps(prevSteps => prevSteps.map(step => {
@@ -406,6 +500,15 @@ const Index = () => {
   const handleMastercardPayment = () => {
     // Add 30 points for paying at Govinda's with Mastercard
     setLoyaltyPoints(prev => prev + 30);
+    setTodaysRewards(prev => prev + 30);
+    
+    // Add user response to chat that they paid
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: "I've paid for my meal with my Mastercard.",
+      timestamp: new Date()
+    };
     
     // Update suggestions
     setSuggestions([
@@ -472,11 +575,6 @@ const Index = () => {
     } else if (action === 'govindas') {
       initializeGovindasJourney();
     }
-  };
-
-  const startWalkingToRestaurant = () => {
-    setJourneyState('walking_to_restaurant');
-    toast.success('Walking directions to Govinda\'s shown on map');
   };
 
   return (
@@ -549,9 +647,9 @@ const Index = () => {
                 {journeyState === 'selecting_restaurant' && (
                   <Button 
                     onClick={startWalkingToRestaurant}
-                    className="w-full mt-2 bg-mastercard-red hover:bg-mastercard-red/90 rounded-lg"
+                    className="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg"
                   >
-                    Start Walking
+                    Select Route
                   </Button>
                 )}
               </div>
@@ -568,14 +666,14 @@ const Index = () => {
               </div>
             )}
             
-            {/* Loyalty info */}
-            {tickets.length > 0 && (
+            {/* Loyalty info - changed to Today's Rewards */}
+            {todaysRewards > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border p-4">
-                <h2 className="text-sm font-medium mb-3">Mastercard Rewards</h2>
+                <h2 className="text-sm font-medium mb-3">Today's Rewards</h2>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Points Balance</p>
-                    <p className="text-2xl font-semibold">{loyaltyPoints}</p>
+                    <p className="text-xs text-gray-500 mb-1">Points Earned Today</p>
+                    <p className="text-2xl font-semibold">{todaysRewards}</p>
                   </div>
                   <div className="w-12 h-12 bg-gradient-to-r from-mastercard-red to-mastercard-yellow rounded-full flex items-center justify-center">
                     <span className="text-white font-bold">MC</span>
