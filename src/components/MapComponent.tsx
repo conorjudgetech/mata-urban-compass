@@ -31,15 +31,15 @@ export const MapComponent: React.FC<MapComponentProps> = ({
   // Define map title based on journey state
   const getMapTitle = () => {
     if (!destination) return "Dublin Map";
-    
+
     if (journeyState === 'arrived_govindas') {
       return `Arrived at ${destination}`;
     }
-    
+
     if (journeyState === 'arrived_oconnell') {
       return "Arrived at O'Connell Street";
     }
-    
+
     return `Route to ${destination}`;
   };
 
@@ -112,7 +112,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 )
               )
             );
-          
+
             if (aircoachRoute) {
               setDirections({
                 ...result,
@@ -134,7 +134,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
 
       const directionsService = new google.maps.DirectionsService();
 
-      
+
 
       directionsService.route(
         {
@@ -165,11 +165,11 @@ export const MapComponent: React.FC<MapComponentProps> = ({
     }
   }, [journeyState]);
 
-  
+
 
   return (
     <div className={`relative bg-gray-100 overflow-hidden transition-all duration-300 rounded-lg border ${isCollapsed ? 'h-12' : 'h-64 md:h-96'}`}>
-      <div 
+      <div
         className="absolute top-0 left-0 right-0 h-12 bg-white dark:bg-gray-900 border-b flex items-center justify-between px-4 z-10 cursor-pointer"
         onClick={handleToggle}
       >
@@ -181,7 +181,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
           {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
         </Button>
       </div>
-      
+
       {!isCollapsed && (
         <div className="w-full h-full pt-12">
           <div className="w-full h-full bg-gray-200 flex items-center justify-center relative">
@@ -193,18 +193,26 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 zoom={zoom}
               >
                 {/* Static Markers */}
-                {(journeyState === 'selecting_route' || journeyState === 'route_selected' || journeyState === 'ticket_purchased' || journeyState === 'boarding_bus') && (
-                  <Marker position={{ lat: 53.427464, lng: -6.243327 }} label="Airport" />
-                )}
-                {(journeyState === 'ticket_purchased' || journeyState === 'on_bus') && (
-                  <Marker position={{ lat: 53.428083, lng: -6.244144 }} label="Bus Stop" />
-                )}
-                {(journeyState === 'selecting_route' || journeyState === 'route_selected' || journeyState === 'on_bus'
-                  || journeyState === 'selecting_restaurant' || journeyState === 'walking_to_restaurant') && (
-                  <Marker position={{ lat: 53.351155, lng: -6.260818 }} label="O'Connell Street Upper" />
-                )}
-                {(journeyState === 'selecting_restaurant' || journeyState === 'walking_to_restaurant') && (
-                  <Marker position={{ lat: 53.348247, lng: -6.260775 }} label="Govinda's" />
+                {directions && (
+                  <>
+                    {/* Custom origin marker (dot) */}
+                    <Marker
+                      position={directions.routes[0].legs[0].start_location}
+                      icon={{
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 6,
+                        fillColor: '#4285F4',
+                        fillOpacity: 1,
+                        strokeColor: '#fff',
+                        strokeWeight: 2,
+                      }}
+                    />
+
+                    {/* Default-style destination marker (pin) */}
+                    <Marker
+                      position={directions.routes[0].legs[0].end_location}
+                    />
+                  </>
                 )}
 
                 {/* Directions Renderer */}
