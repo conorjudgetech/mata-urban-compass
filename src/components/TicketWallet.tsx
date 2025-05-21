@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,9 +23,9 @@ interface TicketData {
   from?: string;
 }
 
-export const TicketWallet: React.FC = () => {
-  // Updated tickets - two expired tickets from Barcelona
-  const tickets: TicketData[] = [
+export const TicketWallet: React.FC<{ tickets?: TicketData[] }> = ({ tickets: externalTickets }) => {
+  // Use internal state that syncs with external prop
+  const [tickets, setTickets] = useState<TicketData[]>([
     {
       id: '1',
       type: 'Aerobus',
@@ -46,7 +46,19 @@ export const TicketWallet: React.FC = () => {
       qrCode: 'qr-code-placeholder',
       isActive: false
     }
-  ];
+  ]);
+
+  // Sync with external tickets if provided
+  useEffect(() => {
+    if (externalTickets && externalTickets.length > 0) {
+      setTickets(prevTickets => {
+        // Merge tickets without duplicates
+        const existingIds = new Set(prevTickets.map(t => t.id));
+        const newTickets = externalTickets.filter(t => !existingIds.has(t.id));
+        return [...prevTickets, ...newTickets];
+      });
+    }
+  }, [externalTickets]);
 
   const activeTickets = tickets.filter(ticket => ticket.isActive);
 

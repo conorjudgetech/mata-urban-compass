@@ -28,10 +28,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, className
         className
       )}
     >
-      <div className="flex items-start gap-3 max-w-full">
-        {/* Removed assistant logo */}
+      <div className={cn("flex items-start gap-3 max-w-full", 
+        isAssistant ? "flex-row" : "flex-row-reverse"
+      )}>
+        {isAssistant && (
+          <div className="h-8 w-8 shrink-0 rounded-full bg-gradient-to-r from-mastercard-red to-mastercard-yellow flex items-center justify-center mt-1">
+            <span className="text-xs font-bold text-white">MC</span>
+          </div>
+        )}
         <div className={cn(
-          "flex-1 p-3 rounded-lg",
+          "flex-1 p-4 rounded-xl", // Changed to rounded-xl for more rounded corners
           isAssistant ? "bg-white border border-gray-100" : "bg-gray-50"
         )}>
           <div className="flex flex-col">
@@ -57,11 +63,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, className
             </div>
           </div>
         </div>
-        {!isAssistant && (
-          <div className="h-8 w-8 shrink-0 rounded-full bg-gray-300 flex items-center justify-center mt-1">
-            <span className="text-xs font-bold text-white">ME</span>
-          </div>
-        )}
       </div>
     </div>
   );

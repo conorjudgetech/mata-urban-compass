@@ -35,6 +35,7 @@ interface JourneyVisualizerProps {
   onRouteSelect?: (routeIndex: number) => void;
   selectedRoute?: number | null;
   journeyState?: string;
+  onStartWalking?: () => void;
 }
 
 export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({ 
@@ -44,6 +45,7 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
   onRouteSelect,
   selectedRoute,
   journeyState,
+  onStartWalking
 }) => {
   // Always expand the active step automatically
   const [expandedStep, setExpandedStep] = useState<string | null>(
@@ -84,6 +86,15 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
   const handleStepClick = (step: JourneyStep) => {
     setExpandedStep(expandedStep === step.id ? null : step.id);
     onStepClick(step);
+  };
+
+  const handleActionButton = (step: JourneyStep) => {
+    // Handle specific action based on step and journey state
+    if (step.icon === 'walk' && journeyState === 'selecting_restaurant' && onStartWalking) {
+      onStartWalking();
+    } else {
+      onStepClick(step);
+    }
   };
 
   // Show route options if they exist and no route is selected yet
@@ -128,7 +139,8 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
               </div>
               
               <Button 
-                className="w-full mt-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg"
+                className="w-full mt-3 rounded-xl"
+                variant="secondary"
               >
                 {index === 0 ? 'Select Bus' : 'Select Bus'}
               </Button>
@@ -169,7 +181,7 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
               
               <div 
                 className={cn(
-                  "journey-step-content",
+                  "journey-step-content rounded-xl", // Added rounded-xl
                   step.status === 'active' && "active",
                   step.status === 'completed' && "completed"
                 )}
@@ -218,12 +230,16 @@ export const JourneyVisualizer: React.FC<JourneyVisualizerProps> = ({
                     )}
                     {step.status === 'active' && (
                       <Button 
-                        className="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg"
+                        className="w-full mt-2 rounded-xl"
+                        variant={step.icon === 'ticket' ? 'mastercard' : 'secondary'}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleActionButton(step);
+                        }}
                       >
                         {step.icon === 'ticket' ? 'Buy Ticket' : 
                          step.icon === 'bus' && journeyState === 'ticket_purchased' ? 'View Ticket in Wallet' :
-                         journeyState === 'selecting_restaurant' ? 'Select Route' :
-                         journeyState === 'walking_to_restaurant' ? "Start Walking" : 
+                         step.icon === 'walk' && journeyState === 'selecting_restaurant' ? 'Start Walking' : 
                          'Details'}
                       </Button>
                     )}

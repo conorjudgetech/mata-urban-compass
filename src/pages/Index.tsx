@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -26,6 +25,18 @@ type JourneyState =
   | 'walking_to_restaurant'
   | 'arrived_govindas';
 
+// Ticket interface
+interface TicketData {
+  id: string;
+  type: string;
+  destination: string;
+  validFrom: string;
+  validUntil: string;
+  qrCode: string;
+  isActive: boolean;
+  from?: string;
+}
+
 const Index = () => {
   const [showOnboarding, setShowOnboarding] = useState(false); // Changed to false to prevent login flash
   const [showPhotoTranslate, setShowPhotoTranslate] = useState(false);
@@ -35,7 +46,7 @@ const Index = () => {
   const [journeySteps, setJourneySteps] = useState<JourneyStep[]>([]);
   const [routeOptions, setRouteOptions] = useState<JourneyStep[][]>([]);
   const [activeJourney, setActiveJourney] = useState(false);
-  const [tickets, setTickets] = useState<any[]>([]);
+  const [tickets, setTickets] = useState<TicketData[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [journeyState, setJourneyState] = useState<JourneyState>('none');
   const [selectedRouteOption, setSelectedRouteOption] = useState<number | null>(null);
@@ -323,6 +334,7 @@ const Index = () => {
     const newTicket = {
       id: Date.now().toString(),
       type: 'Aircoach Express Bus',
+      from: 'Dublin Airport',
       destination: destination,
       validFrom: '19 May, 13:45',
       validUntil: '19 May, 23:59',
@@ -330,7 +342,7 @@ const Index = () => {
       isActive: true
     };
     
-    setTickets(prev => [...prev, newTicket]);
+    setTickets(prevTickets => [...prevTickets, newTicket]);
     
     // Update suggestions
     setSuggestions([
@@ -424,13 +436,13 @@ const Index = () => {
   const startWalkingToRestaurant = () => {
     setJourneyState('walking_to_restaurant');
     
-    // Add user response to chat that they started walking
-    const userMessage = {
-      id: `user-${Date.now()}`,
-      sender: 'user',
-      text: "I'm starting my walk to Govinda's Restaurant.",
-      timestamp: new Date()
-    };
+    // Update journey steps
+    setJourneySteps(prevSteps => prevSteps.map(step => {
+      if (step.id === 'walk') {
+        return { ...step, status: 'active' };
+      }
+      return step;
+    }));
     
     // Update suggestions with an "I've arrived" button
     setSuggestions([
@@ -641,17 +653,8 @@ const Index = () => {
                   onRouteSelect={selectRouteOption}
                   selectedRoute={selectedRouteOption}
                   journeyState={journeyState}
+                  onStartWalking={journeyState === 'selecting_restaurant' ? startWalkingToRestaurant : undefined}
                 />
-                
-                {/* Additional action button for walking to restaurant if needed */}
-                {journeyState === 'selecting_restaurant' && (
-                  <Button 
-                    onClick={startWalkingToRestaurant}
-                    className="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg"
-                  >
-                    Select Route
-                  </Button>
-                )}
               </div>
             )}
             
@@ -686,6 +689,9 @@ const Index = () => {
       </main>
       
       <Footer />
+
+      {/* Pass tickets to TicketWallet */}
+      <TicketWallet tickets={tickets} />
     </div>
   );
 };

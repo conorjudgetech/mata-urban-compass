@@ -75,7 +75,7 @@ export const ContextualSuggestions: React.FC<ContextualSuggestionsProps> = ({
         <Card 
           key={suggestion.id} 
           className={cn(
-            "cursor-pointer transition-all hover:shadow-md",
+            "cursor-pointer transition-all hover:shadow-md rounded-xl",
             getBgColor(suggestion.type)
           )}
           onClick={() => handleClick(suggestion)}
@@ -93,8 +93,8 @@ export const ContextualSuggestions: React.FC<ContextualSuggestionsProps> = ({
                 {suggestion.action && (
                   <Button 
                     size="sm" 
-                    variant="outline"
-                    className="mt-2" 
+                    variant="secondary"
+                    className="mt-2 rounded-xl" 
                     onClick={(e) => {
                       e.stopPropagation();
                       suggestion.action?.onClick();

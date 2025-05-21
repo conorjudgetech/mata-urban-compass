@@ -29,7 +29,7 @@
 
 /* Journey step styling */
 .journey-step {
-  @apply bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border cursor-pointer transition-all;
+  @apply bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border cursor-pointer transition-all;
   min-width: 150px;
 }
 
@@ -51,9 +51,35 @@
 
 /* Payment method styling */
 .payment-method {
-  @apply flex items-center p-3 border rounded-lg;
+  @apply flex items-center p-3 border rounded-xl;
 }
 
 .payment-method.selected {
   @apply border-mastercard-red;
+}
+
+/* Set all buttons to have rounded corners by default */
+button {
+  @apply rounded-xl;
+}
+
+/* Make all cards have rounded corners by default */
+.card, 
+.dialog-content, 
+.modal-content, 
+.toast-root, 
+.popover-content {
+  @apply rounded-xl;
+}
+
+/* Consistent input styling */
+input, 
+select, 
+textarea {
+  @apply rounded-xl;
+}
+
+/* Override default focus styles with Mastercard red */
+*:focus-visible {
+  @apply outline-mastercard-red;
 }

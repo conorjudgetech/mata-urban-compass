@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Image, Mic, Send, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -201,6 +200,24 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
+  // Add a function to add system-generated user messages
+  const addUserAction = (text: string) => {
+    const newUserMessage: Message = {
+      id: `user-action-${Date.now()}`,
+      sender: 'user',
+      text: text,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, newUserMessage]);
+    
+    // Simulate typing indicator for response
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+    }, 1000);
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4">
@@ -212,11 +229,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         ))}
         {isTyping && (
           <div className="flex items-center gap-2 mb-4">
-            <div className="bg-gray-100 p-3 rounded-lg">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-75"></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-150"></div>
+            <div className="h-8 w-8 shrink-0 rounded-full bg-gradient-to-r from-mastercard-red to-mastercard-yellow flex items-center justify-center mt-1">
+              <span className="text-xs font-bold text-white">MC</span>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-gray-100">
+              <div className="flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-mastercard-red animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-mastercard-yellow animate-pulse delay-75"></div>
+                <div className="w-2 h-2 rounded-full bg-mastercard-red animate-pulse delay-150"></div>
               </div>
             </div>
           </div>
@@ -227,15 +247,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div className="border-t p-4 bg-white dark:bg-gray-900">
         <div className="flex gap-2">
           <Button
-            variant={isRecording ? "default" : "outline"}
+            variant={isRecording ? "mastercard" : "secondary"}
             size="icon"
             onClick={handleVoiceInput}
-            className={`shrink-0 rounded-full ${isRecording ? 'bg-mastercard-red animate-pulse' : ''}`}
+            className={`shrink-0 rounded-full ${isRecording ? 'animate-pulse' : ''}`}
           >
             <Mic className="h-5 w-5" />
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             onClick={handleImageUpload}
             className="shrink-0 rounded-full"
@@ -243,10 +263,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <Camera className="h-5 w-5" />
           </Button>
           <Button
-            variant={isTranslating ? "default" : "outline"}
+            variant={isTranslating ? "mastercard" : "secondary"}
             size="icon"
             onClick={handleTranslate}
-            className={`shrink-0 rounded-full ${isTranslating ? 'bg-blue-500' : ''}`}
+            className="shrink-0 rounded-full"
           >
             <Languages className="h-5 w-5" />
           </Button>
@@ -260,7 +280,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             />
             <Button 
               onClick={handleSend} 
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full"
+              variant="secondary"
+              className="rounded-full"
             >
               <Send className="h-5 w-5 text-gray-600" />
             </Button>
