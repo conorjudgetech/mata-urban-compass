@@ -19,7 +19,7 @@ interface MessageBubbleProps {
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, className }) => {
   const isAssistant = message.sender === 'assistant';
-  
+
   return (
     <div
       className={cn(
@@ -28,16 +28,31 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, className
         className
       )}
     >
-      <div className="flex items-start gap-2">
-        {isAssistant && (
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-mastercard-red to-mastercard-yellow">
-            <span className="text-xs font-bold text-white">MA</span>
-          </div>
-        )}
+      <div className="flex items-start mb-2 ${!isAssistant ? 'justify-end' : 'justify-start'}">
         <div className="flex-1">
           <div className="flex flex-col">
-            <div className="text-sm">
-              {message.text}
+            <div className={`flex ${isAssistant ? 'self-start' : 'self-end'}`}>
+              <div className={`relative pt-4 ${isAssistant ? 'max-w-[80%]' : ''}`}>
+                <div
+                  className={`relative whitespace-pre-line px-4 py-2 text-sm rounded-xl
+                    ${isAssistant ? 'bg-gray-50 text-black' : 'bg-gray-500 text-white'}
+                  `}
+                  style={{
+                    // allow overflow for tail
+                    overflow: 'visible',
+                  }}
+                >
+                  {message.text}
+
+                  
+                </div>
+                <span className="absolute bottom-0 right-1 translate-y-full ml-auto text-xs text-gray-400 mt-1">
+                  {new Intl.DateTimeFormat('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }).format(message.timestamp)}
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-2 mt-1">
               {message.hasWarning && (
@@ -49,20 +64,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, className
               {message.source && (
                 <a href="#" className="text-xs text-blue-600 underline">Source: {message.source}</a>
               )}
-              <span className="ml-auto text-xs text-gray-400">
-                {new Intl.DateTimeFormat('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                }).format(message.timestamp)}
-              </span>
+
             </div>
           </div>
         </div>
-        {!isAssistant && (
-          <div className="h-8 w-8 shrink-0 rounded-full bg-gray-300 flex items-center justify-center">
-            <span className="text-xs font-bold text-white">ME</span>
-          </div>
-        )}
       </div>
     </div>
   );
